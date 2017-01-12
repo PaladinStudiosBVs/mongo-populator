@@ -15,6 +15,17 @@ setup(
     url='https://github.com/PaladinStudiosBVs',
     license='GPLv3',
     install_requires=['paramiko'],
+    classifiers=[
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Operating System :: POSIX',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Topic :: System :: Systems Administration',
+        'Topic :: Utilities'
+    ],
     scripts=[
         'bin/mongo_populator'
     ]
