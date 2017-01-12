@@ -1,0 +1,36 @@
+# build products...
+*.py[co]
+build
+
+# PyCharm
+.idea
+
+# Python stuff
+__pycache__
+
+# OSX
+.DS_Store
+
+# Local environment variables
+.env
+
+# Local project files
+.local
+
+# Vim swap files
+.*.swp
+
+# Directory with temporary files
+tmp
+
+# test output
+*.retry
+*.out
+.tox
+.cache
+results.xml
+coverage.xml
+/test/units/cover-html
+
+# Development
+/test/develop
