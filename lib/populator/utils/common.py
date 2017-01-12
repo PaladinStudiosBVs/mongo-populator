@@ -19,33 +19,13 @@
 
 ########################################################
 
-import os
-import glob
-import shutil
-
-from populator.source import MongoPopulator
+import sys
 
 
-class MongoLocalPopulator(MongoPopulator):
-    """
-    Populates your local Mongo database from a local dump. This
-    local dump is located in <pangaea-db-dir>/db.
-    """
-    def create_dump_dir(self):
-        prefixes = [
-            "config_groups",
-            "game_configs",
-            "games",
-            "mirage_config",
-            "adminusers",
-            "keystone_users",
-            "users"
-        ]
+def die(msg):
+    print(f"[ERROR] {msg}")
+    sys.exit(1)
 
-        mongo_data_dir = os.path.dirname(os.path.abspath(__file__)) + "/../db"
-        self.dump_dir = mongo_data_dir + "/dump/"
 
-        os.mkdir(self.dump_dir)
-        for p in prefixes:
-            for f in glob.glob(f"{mongo_data_dir}/{p}*"):
-                shutil.copy(f, self.dump_dir)
+def info(msg):
+    print(f"[INFO] {msg}")

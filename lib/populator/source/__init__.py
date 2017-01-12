@@ -18,8 +18,8 @@
 # along with Mongo Populator.  If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################
-import subprocess
 import shutil
+import subprocess
 
 from populator.utils.common import info, die
 

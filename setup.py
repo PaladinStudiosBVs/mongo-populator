@@ -2,10 +2,10 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('.'))
-from populator.release import __author__, __version__
-
 from setuptools import setup, find_packages
+
+sys.path.insert(0, os.path.abspath('lib'))
+from populator.release import __author__, __version__
 
 setup(
     name='mongo_populator',
@@ -15,6 +15,8 @@ setup(
     url='https://github.com/PaladinStudiosBVs',
     license='GPLv3',
     install_requires=['paramiko'],
+    package_dir={'': 'lib'},
+    packages=find_packages('lib'),
     classifiers=[
         'Environment :: Console',
         'Intended Audience :: Developers',

@@ -21,7 +21,7 @@
 ########################################################
 import argparse
 
-from populator.factory import factory
+from lib.populator.factory import factory
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
