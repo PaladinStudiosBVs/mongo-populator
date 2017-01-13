@@ -9,7 +9,7 @@
 #   make tests ---------------- run the tests (see test/README.md for requirements)
 #   make pyflakes, make pep8 -- source code checks
 
-NAME = mongo_populator
+NAME = mongo-populator
 OS = $(shell uname -s)
 
 PYTHON=python
@@ -47,7 +47,7 @@ DEB_PPA ?= ppa
 DEB_DIST ?= unstable
 
 # Test parameters
-MONGO_POPULATOR_TEST ?= test/runner/mongo_populator-test
+MONGO_POPULATOR_TEST ?= test/runner/mongo-populator-test
 PYTHON_VERSION ?= $(shell python3 -c 'import sys; print("%s.%s" % sys.version_info[:2])')
 
 # Integration parameters (make integration)
