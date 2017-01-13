@@ -28,7 +28,7 @@ from populator.utils.text import to_text
 BOOL_TRUE = frozenset(['true', 't', 'y', '1', 'yes', 'on'])
 
 
-def mk_boolean(value):
+def make_boolean(value):
     ret = value
     if not isinstance(value, bool):
         if value is None:
@@ -40,6 +40,12 @@ def mk_boolean(value):
 
 
 def shell_expand(path, expand_relative_paths=False):
+    """
+    This is needed, since os.path.expanduser doesn't work
+    :param path:
+    :param expand_relative_paths:
+    :return:
+    """
     if path:
         path = os.path.expanduser(os.path.expandvars(path))
         if expand_relative_paths and not path.startswith('/'):
@@ -75,7 +81,7 @@ def get_config(p, section, key, env_var, default, value_type=None, expand_relati
     value = _get_config(p, section, key, env_var, default)
 
     if value_type == 'boolean':
-        value = mk_boolean(value)
+        value = make_boolean(value)
     elif value:
         if value_type == 'integer':
             value = int(value)
