@@ -19,26 +19,22 @@
 # along with Mongo Populator.  If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################
-import argparse
 
-from lib.populator.factory import factory
+import sys
+
+from populator.cli import CLI
+from populator.utils.common import die
+from populator.utils.text import to_text
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="""
-            Tool that populates a Mongo database with a dump that
-            can either be local, fetched from another Mongo database via SSH
-            or from an Amazon S3 bucket.
-            """,
-        epilog="""
-            Visit the website for more information.
-            """
-    )
-    parser.add_argument("--source", help="Where we are getting the dump from (local, ssh, s3)")
-    args = parser.parse_args()
-
-    if not args.source:
-        parser.print_help()
+    try:
+        args = [to_text(a, errors='surrogate_or_strict') for a in sys.argv]
+    except UnicodeError:
+        die('Command line arguments are not in utf-8, can\'t proceed.')
+        exit_code = 6
     else:
-        with factory(args.source) as pop:
-            pop.populate()
+        cli = CLI(args)
+        cli.parse()
+        exit_code = cli.run()
+        
+    sys.exit(exit_code)

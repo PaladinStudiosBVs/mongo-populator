@@ -51,8 +51,8 @@ def shell_expand(path, expand_relative_paths=False):
         if expand_relative_paths and not path.startswith('/'):
             # paths are always 'relative' to the config?
             if 'CONFIG_FILE' in globals():
-                CFGDIR = os.path.dirname(CONFIG_FILE)
-                path = os.path.join(CFGDIR, path)
+                config_dir = os.path.dirname(CONFIG_FILE)
+                path = os.path.join(config_dir, path)
             path = os.path.abspath(path)
 
     return path
@@ -112,7 +112,7 @@ def load_config_file():
     The first found (in that order) is the first returned
     :return:
     """
-    p = configparser.ConfigParser()
+    parser = configparser.ConfigParser()
 
     path1 = os.getenv('MONGO_POPULATOR_CONFIG', None)
     if path1 is not None:
@@ -131,11 +131,28 @@ def load_config_file():
     for path in [path1, path2, path3, path4]:
         if path is not None and os.path.exists(path):
             try:
-                p.read(path)
+                parser.read(path)
             except configparser.Error as e:
                 raise MongoPopulatorOptionsError(f"Error reading config file: \n{e}")
-            return p, path
+            return parser, path
 
     return None, ''
 
-parser, CONFIG_FILE = load_config_file()
+p, CONFIG_FILE = load_config_file()
+
+DEFAULTS = 'defaults'
+
+SOURCE_USE_LOCAL_DUMP = get_config(p, DEFAULTS, 'source_use_local_dump', 'MONGO_POPULATOR_SOURCE_USE_LOCAL_DUMP',
+                                   True, value_type='boolean')
+SOURCE_DUMP_DIR = get_config(p, DEFAULTS, 'source_dump_dir', 'MONGO_POPULATOR_SOURCE_DUMP_DIR',
+                             '~/.mongo-populator/dump/', value_type='path')
+SOURCE_USE_SSH = get_config(p, DEFAULTS, 'source_use_ssh', 'MONGO_POPULATOR_SOURCE_USE_SSH', False,
+                            value_type='boolean')
+SOURCE_SSH_HOST = get_config(p, DEFAULTS, 'source_ssh_host', 'MONGO_POPULATOR_SOURCE_SSH_HOST', '127.0.0.1')
+SOURCE_SSH_USER = get_config(p, DEFAULTS, 'source_ssh_user', 'MONGO_POPULATOR_SOURCE_SSH_USER', '')
+SOURCE_SSH_PASSWORD = get_config(p, DEFAULTS, 'source_ssh_password', 'MONGO_POPULATOR_SOURCE_SSH_PASSWORD', '')
+SOURCE_USE_S3 = get_config(p, DEFAULTS, 'source_use_s3', 'MONGO_POPULATOR_SOURCE_USE_S3', False, value_type='boolean')
+DESTINATION_USE_LOCAL_DB = get_config(p, DEFAULTS, 'destination_use_local_db',
+                                      'MONGO_POPULATOR_DESTINATION_USE_LOCAL_DB', False, value_type='boolean')
+DESTINATION_USE_SSH = get_config(p, DEFAULTS, 'destination_use_ssh', 'MONGO_POPULATOR_DESTINATION_USE_SSH',
+                                 False, value_type='boolean')

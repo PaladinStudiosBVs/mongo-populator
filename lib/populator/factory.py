@@ -20,10 +20,6 @@
 ########################################################
 
 
-class MongoAmazonS3Populator(MongoPopulator):
-    pass
-
-
 def factory(source):
     """
     :type source: str

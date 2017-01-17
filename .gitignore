@@ -1,6 +1,7 @@
 # build products...
 *.py[co]
-build
+build/
+dist/
 
 # PyCharm
 .idea
@@ -34,3 +35,4 @@ coverage.xml
 
 # Development
 /test/develop
+mongo_populator.egg-info/
