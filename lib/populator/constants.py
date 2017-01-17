@@ -142,17 +142,22 @@ p, CONFIG_FILE = load_config_file()
 
 DEFAULTS = 'defaults'
 
-SOURCE_USE_LOCAL_DUMP = get_config(p, DEFAULTS, 'source_use_local_dump', 'MONGO_POPULATOR_SOURCE_USE_LOCAL_DUMP',
-                                   True, value_type='boolean')
-SOURCE_DUMP_DIR = get_config(p, DEFAULTS, 'source_dump_dir', 'MONGO_POPULATOR_SOURCE_DUMP_DIR',
-                             '~/.mongo-populator/dump/', value_type='path')
-SOURCE_USE_SSH = get_config(p, DEFAULTS, 'source_use_ssh', 'MONGO_POPULATOR_SOURCE_USE_SSH', False,
-                            value_type='boolean')
+SOURCE_DB_NAME = get_config(p, DEFAULTS, 'source_db_name', 'MONGO_POPULATOR_SOURCE_DB_NAME', '')
+SOURCE_USE_LOCAL_DB = get_config(p, DEFAULTS, 'source_use_local_db', 'MONGO_POPULATOR_SOURCE_USE_LOCAL_DB', True, value_type='boolean')
+SOURCE_USE_LOCAL_DUMP = get_config(p, DEFAULTS, 'source_use_local_dump', 'MONGO_POPULATOR_SOURCE_USE_LOCAL_DUMP', True, value_type='boolean')
+SOURCE_DUMP_DIR = get_config(p, DEFAULTS, 'source_dump_dir', 'MONGO_POPULATOR_SOURCE_DUMP_DIR', '~/.mongo-populator/dump/', value_type='path')
+
+SOURCE_USE_SSH = get_config(p, DEFAULTS, 'source_use_ssh', 'MONGO_POPULATOR_SOURCE_USE_SSH', False, value_type='boolean')
 SOURCE_SSH_HOST = get_config(p, DEFAULTS, 'source_ssh_host', 'MONGO_POPULATOR_SOURCE_SSH_HOST', '127.0.0.1')
 SOURCE_SSH_USER = get_config(p, DEFAULTS, 'source_ssh_user', 'MONGO_POPULATOR_SOURCE_SSH_USER', '')
 SOURCE_SSH_PASSWORD = get_config(p, DEFAULTS, 'source_ssh_password', 'MONGO_POPULATOR_SOURCE_SSH_PASSWORD', '')
+
 SOURCE_USE_S3 = get_config(p, DEFAULTS, 'source_use_s3', 'MONGO_POPULATOR_SOURCE_USE_S3', False, value_type='boolean')
-DESTINATION_USE_LOCAL_DB = get_config(p, DEFAULTS, 'destination_use_local_db',
-                                      'MONGO_POPULATOR_DESTINATION_USE_LOCAL_DB', False, value_type='boolean')
-DESTINATION_USE_SSH = get_config(p, DEFAULTS, 'destination_use_ssh', 'MONGO_POPULATOR_DESTINATION_USE_SSH',
-                                 False, value_type='boolean')
+
+DESTINATION_DB_NAME = get_config(p, DEFAULTS, 'destination_db_name', 'MONGO_POPULATOR_DESTINATION_DB_NAME', '')
+DESTINATION_USE_LOCAL_DB = get_config(p, DEFAULTS, 'destination_use_local_db', 'MONGO_POPULATOR_DESTINATION_USE_LOCAL_DB', False, value_type='boolean')
+
+DESTINATION_USE_SSH = get_config(p, DEFAULTS, 'destination_use_ssh', 'MONGO_POPULATOR_DESTINATION_USE_SSH', False, value_type='boolean')
+DESTINATION_SSH_HOST = get_config(p, DEFAULTS, 'destination_ssh_host', 'MONGO_POPULATOR_DESTINATION_SSH_HOST', '127.0.0.1')
+DESTINATION_SSH_USER = get_config(p, DEFAULTS, 'destination_ssh_user', 'MONGO_POPULATOR_DESTINATION_SSH_USER', '')
+DESTINATION_SSH_PASSWORD = get_config(p, DEFAULTS, 'destination_ssh_password', 'MONGO_POPULATOR_DESTINATION_SSH_PASSWORD', '')

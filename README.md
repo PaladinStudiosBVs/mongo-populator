@@ -9,7 +9,7 @@ In order to install Mongo Populator, follow these steps:
  3. `sudo make install`
  
 ## Usage
-You can run 
+To do
  
 ## License
 Click on the [Link](https://github.com/PaladinStudiosBVs/mongo-populator/blob/master/COPYING) to see the full text.

@@ -19,21 +19,9 @@
 
 ########################################################
 
-from paramiko.client import SSHClient
-
-from populator import SSHPopulator
-from populator.source import MongoSource
+from populator.destination import MongoDestination
 
 
-class SSHSource(SSHPopulator, MongoSource):
-    def __init__(self, ssh_host=None, ssh_user=None, ssh_password=None):
-        SSHPopulator.__init__(ssh_host=ssh_host, ssh_user=ssh_user, ssh_password=ssh_password)
-        
-    def get_dump_dir(self):
-        mongo_data_dir = os.path.dirname(os.path.abspath(__file__)) + "/../db"
-        self.dump_dir = mongo_data_dir + "/dump/"
-    
-        os.mkdir(self.dump_dir)
-        for p in prefixes:
-            for f in glob.glob(f"{mongo_data_dir}/{p}*"):
-                shutil.copy(f, self.dump_dir)
+class SSHDestination(MongoDestination):
+    def _populate(self):
+        pass

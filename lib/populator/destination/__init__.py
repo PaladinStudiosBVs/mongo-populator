@@ -19,16 +19,24 @@
 
 ########################################################
 
+from abc import ABCMeta, abstractmethod
 
-def factory(source):
-    """
-    :type source: str
-    :param source:
-    :rtype: populator.factory.MongoPopulator
-    :return:
-    """
-    return {
-        "local": MongoLocalPopulator,
-        "ssh": MongoSSHPopulator,
-        "s3": MongoAmazonS3Populator
-    }[source]()
+from populator import PopulatorCtxManager
+
+
+class MongoDestination(PopulatorCtxManager, metaclass=ABCMeta):
+    def __init__(self, source):
+        """
+        :type source: populator.source.MongoSource
+        :param source:
+        """
+        self.source = source
+        self.dump_dir = None
+        
+    @abstractmethod
+    def _populate(self):
+        pass
+    
+    def run(self):
+        self.dump_dir = self.source.get_dump_dir()
+        self._populate()

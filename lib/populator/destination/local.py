@@ -19,21 +19,23 @@
 
 ########################################################
 
-from paramiko.client import SSHClient
+import subprocess
+import shutil
 
-from populator import SSHPopulator
-from populator.source import MongoSource
+from populator import MongoConfig
+from populator.destination import MongoDestination
 
 
-class SSHSource(SSHPopulator, MongoSource):
-    def __init__(self, ssh_host=None, ssh_user=None, ssh_password=None):
-        SSHPopulator.__init__(ssh_host=ssh_host, ssh_user=ssh_user, ssh_password=ssh_password)
+class LocalDestination(MongoConfig, MongoDestination):
+    def __init__(self, db_name, source):
+        MongoConfig.__init__(self, db_name)
+        MongoDestination.__init__(self, source)
         
-    def get_dump_dir(self):
-        mongo_data_dir = os.path.dirname(os.path.abspath(__file__)) + "/../db"
-        self.dump_dir = mongo_data_dir + "/dump/"
-    
-        os.mkdir(self.dump_dir)
-        for p in prefixes:
-            for f in glob.glob(f"{mongo_data_dir}/{p}*"):
-                shutil.copy(f, self.dump_dir)
+    def _populate(self):
+        subprocess.check_output(
+            "mongorestore --drop --db {} {}".format(self.db_name, self.dump_dir),
+            stderr=subprocess.STDOUT,
+            shell=True
+        )
+
+        shutil.rmtree(self.dump_dir)
