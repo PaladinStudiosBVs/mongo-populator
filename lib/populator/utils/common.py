@@ -29,11 +29,6 @@ from populator.utils.color import stringc
 logger = None
 
 
-def die(msg):
-    print(f"[ERROR] {msg}")
-    sys.exit(1)
-
-
 def info(msg, color=None, stderr=False, screen_only=False, log_only=False):
     """
     https://github.com/ansible/ansible/blob/devel/lib/ansible/utils/display.py
@@ -78,5 +73,8 @@ def info(msg, color=None, stderr=False, screen_only=False, log_only=False):
             logger.error(msg2)
         else:
             logger.info(msg2)
-    
-    print(f"[INFO] {msg}")
+            
+
+def die(msg):
+    info(msg, color='red')
+    sys.exit(1)

@@ -19,9 +19,52 @@
 
 ########################################################
 
+from datetime import datetime
+
+from populator.utils.common import info, die
+from populator import SSHPopulator, MongoConfig
 from populator.destination import MongoDestination
 
 
-class SSHDestination(MongoDestination):
+class SSHDestination(SSHPopulator, MongoConfig, MongoDestination):
+    def __init__(self, db_name=None, db_user=None, db_password=None, ssh_host=None, ssh_user=None, ssh_password=None,
+                 key_file=None, source=None):
+        MongoConfig.__init__(self, db_name, db_user=db_user, db_password=db_password)
+        MongoDestination.__init__(self, source)
+        SSHPopulator.__init__(
+            self,
+            ssh_host=ssh_host,
+            ssh_user=ssh_user,
+            ssh_password=ssh_password,
+            key_file=key_file
+        )
+        
     def _populate(self):
-        pass
+        # We now have a directory with the database dump, so we must first
+        # copy that to the destination
+        remote_dump_dir = '/tmp/mongodumps/{}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'))
+        _, stdout, _ = self.ssh_client.exec_command('mkdir -p {}'.format(remote_dump_dir))
+        exit_status = stdout.channel.recv_exit_status()
+        if exit_status == 0:
+            info(
+                'Temporary directory created in remote source: {}'.format(remote_dump_dir),
+                color='green'
+            )
+        else:
+            die('Problems creating temporary directory in remote source')
+        
+        self.scp_client.put(self.dump_dir, remote_dump_dir, recursive=True)
+        # Then we run mongoresture in the remote host
+        restore_str = self.get_restore_str() % \
+                      '{}/{}'.format(remote_dump_dir, self.dump_dir.split('/')[-1])
+        stdin, stdout, stderr = self.ssh_client.exec_command(
+            restore_str
+        )
+        exit_status = stdout.channel.recv_exit_status()
+        if exit_status == 0:
+            info(
+                'Successfully restored remote database: {}'.format(restore_str),
+                color='green'
+            )
+        else:
+            die('Problems restoring remote database: {}'.format(restore_str))

@@ -34,12 +34,12 @@ class LocalDestination(MongoConfig, MongoDestination):
         
     def _populate(self):
         try:
-            subprocess.check_output(
-                "mongorestore --drop --db {} {}".format(self.db_name, self.dump_dir),
+            subprocess.run(
+                self.get_restore_str() % '{}/{}'.format(self.dump_dir, self.db_name),
                 stderr=subprocess.STDOUT,
                 shell=True
             )
             return 0
         except CalledProcessError as e:
-            info(e.output)
+            print(e.output)
             return e.returncode

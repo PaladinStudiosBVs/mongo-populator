@@ -25,6 +25,9 @@ from populator import PopulatorCtxManager
 
 
 class MongoSource(PopulatorCtxManager, metaclass=ABCMeta):
+    def __init__(self, tmp_dir=None):
+        self.tmp_dir = tmp_dir
+        
     @abstractmethod
     def get_dump_dir(self):
         pass

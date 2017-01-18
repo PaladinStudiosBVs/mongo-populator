@@ -10,12 +10,12 @@ In order to install Mongo Populator, follow these steps:
  
 ## Usage
 Here are are the current supported use cases:
-#### From a dump in a local directory to a local Mongo database.
+### From a dump in a local directory to a local Mongo database.
 ```
 # mongo-populator --source-use-local-dump --source-dump-dir <dump-directory> --destination-use-local-db --destination-db-name <db-name> 
 ```
 
-#### From a dump in a local directory to a Mongo database that you must connect via SSH
+### From a dump in a local directory to a Mongo database that you must connect via SSH
 ```
 # mongo-populator --source-use-local-dump --source-dump-dir <dump-directory> --destination-use-ssh --destination-db-name <db-name>
 --destination-ssh-host <host> --destination-ssh-user <user> --destintion-ssh-password <password> --destination-ssh-identity-file <file>
