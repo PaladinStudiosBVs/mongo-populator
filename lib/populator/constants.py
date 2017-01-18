@@ -140,10 +140,11 @@ def load_config_file():
 
 p, CONFIG_FILE = load_config_file()
 
+# The defaults section in the configuration file
 DEFAULTS = 'defaults'
 
 SOURCE_DB_NAME = get_config(p, DEFAULTS, 'source_db_name', 'MONGO_POPULATOR_SOURCE_DB_NAME', '')
-SOURCE_USE_LOCAL_DB = get_config(p, DEFAULTS, 'source_use_local_db', 'MONGO_POPULATOR_SOURCE_USE_LOCAL_DB', True, value_type='boolean')
+SOURCE_USE_LOCAL_DB = get_config(p, DEFAULTS, 'source_use_local_db', 'MONGO_POPULATOR_SOURCE_USE_LOCAL_DB', False, value_type='boolean')
 SOURCE_USE_LOCAL_DUMP = get_config(p, DEFAULTS, 'source_use_local_dump', 'MONGO_POPULATOR_SOURCE_USE_LOCAL_DUMP', True, value_type='boolean')
 SOURCE_DUMP_DIR = get_config(p, DEFAULTS, 'source_dump_dir', 'MONGO_POPULATOR_SOURCE_DUMP_DIR', '~/.mongo-populator/dump/', value_type='path')
 
@@ -155,9 +156,28 @@ SOURCE_SSH_PASSWORD = get_config(p, DEFAULTS, 'source_ssh_password', 'MONGO_POPU
 SOURCE_USE_S3 = get_config(p, DEFAULTS, 'source_use_s3', 'MONGO_POPULATOR_SOURCE_USE_S3', False, value_type='boolean')
 
 DESTINATION_DB_NAME = get_config(p, DEFAULTS, 'destination_db_name', 'MONGO_POPULATOR_DESTINATION_DB_NAME', '')
-DESTINATION_USE_LOCAL_DB = get_config(p, DEFAULTS, 'destination_use_local_db', 'MONGO_POPULATOR_DESTINATION_USE_LOCAL_DB', False, value_type='boolean')
+DESTINATION_USE_LOCAL_DB = get_config(p, DEFAULTS, 'destination_use_local_db', 'MONGO_POPULATOR_DESTINATION_USE_LOCAL_DB', True, value_type='boolean')
 
 DESTINATION_USE_SSH = get_config(p, DEFAULTS, 'destination_use_ssh', 'MONGO_POPULATOR_DESTINATION_USE_SSH', False, value_type='boolean')
 DESTINATION_SSH_HOST = get_config(p, DEFAULTS, 'destination_ssh_host', 'MONGO_POPULATOR_DESTINATION_SSH_HOST', '127.0.0.1')
 DESTINATION_SSH_USER = get_config(p, DEFAULTS, 'destination_ssh_user', 'MONGO_POPULATOR_DESTINATION_SSH_USER', '')
 DESTINATION_SSH_PASSWORD = get_config(p, DEFAULTS, 'destination_ssh_password', 'MONGO_POPULATOR_DESTINATION_SSH_PASSWORD', '')
+
+# Display
+MONGO_POPULATOR_FORCE_COLOR = get_config(p, DEFAULTS, 'force_color', 'MONGO_POPULATOR_FORCE_COLOR', None, value_type='boolean')
+MONGO_POPULATOR_NOCOLOR = get_config(p, DEFAULTS, 'nocolor', 'MONGO_POPULATOR_NOCOLOR', None, value_type='boolean')
+
+# Colors
+COLOR_HIGHLIGHT = get_config(p, 'colors', 'highlight', 'MONGO_POPULATOR_COLOR_HIGHLIGHT', 'white')
+COLOR_VERBOSE = get_config(p, 'colors', 'verbose', 'MONGO_POPULATOR_COLOR_VERBOSE', 'blue')
+COLOR_WARN = get_config(p, 'colors', 'warn', 'MONGO_POPULATOR_COLOR_WARN', 'bright purple')
+COLOR_ERROR = get_config(p, 'colors', 'error', 'MONGO_POPULATOR_COLOR_ERROR', 'red')
+COLOR_DEBUG = get_config(p, 'colors', 'debug', 'MONGO_POPULATOR_COLOR_DEBUG', 'dark gray')
+COLOR_DEPRECATE = get_config(p, 'colors', 'deprecate', 'MONGO_POPULATOR_COLOR_DEPRECATE', 'purple')
+COLOR_SKIP = get_config(p, 'colors', 'skip', 'MONGO_POPULATOR_COLOR_SKIP', 'cyan')
+COLOR_UNREACHABLE = get_config(p, 'colors', 'unreachable', 'MONGO_POPULATOR_COLOR_UNREACHABLE', 'bright red')
+COLOR_OK = get_config(p, 'colors', 'ok', 'MONGO_POPULATOR_COLOR_OK', 'green')
+COLOR_CHANGED = get_config(p, 'colors', 'changed', 'MONGO_POPULATOR_COLOR_CHANGED', 'yellow')
+COLOR_DIFF_ADD = get_config(p, 'colors', 'diff_add', 'MONGO_POPULATOR_COLOR_DIFF_ADD', 'green')
+COLOR_DIFF_REMOVE = get_config(p, 'colors', 'diff_remove', 'MONGO_POPULATOR_COLOR_DIFF_REMOVE', 'red')
+COLOR_DIFF_LINES = get_config(p, 'colors', 'diff_lines', 'MONGO_POPULATOR_COLOR_DIFF_LINES', 'cyan')

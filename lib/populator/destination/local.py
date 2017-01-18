@@ -20,10 +20,11 @@
 ########################################################
 
 import subprocess
-import shutil
+from subprocess import CalledProcessError
 
 from populator import MongoConfig
 from populator.destination import MongoDestination
+from populator.utils.common import info
 
 
 class LocalDestination(MongoConfig, MongoDestination):
@@ -32,10 +33,13 @@ class LocalDestination(MongoConfig, MongoDestination):
         MongoDestination.__init__(self, source)
         
     def _populate(self):
-        subprocess.check_output(
-            "mongorestore --drop --db {} {}".format(self.db_name, self.dump_dir),
-            stderr=subprocess.STDOUT,
-            shell=True
-        )
-
-        shutil.rmtree(self.dump_dir)
+        try:
+            subprocess.check_output(
+                "mongorestore --drop --db {} {}".format(self.db_name, self.dump_dir),
+                stderr=subprocess.STDOUT,
+                shell=True
+            )
+            return 0
+        except CalledProcessError as e:
+            info(e.output)
+            return e.returncode

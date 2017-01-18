@@ -34,3 +34,7 @@ class LocalDumpSource(MongoSource):
 class LocalDbSource(MongoConfig, MongoSource):
     def __init__(self, db_name):
         MongoConfig.__init__(self, db_name)
+        
+    def get_dump_dir(self):
+        # todo
+        return ''

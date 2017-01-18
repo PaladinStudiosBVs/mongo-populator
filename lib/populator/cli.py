@@ -59,7 +59,7 @@ class CLI(object):
                                        default=C.SOURCE_DB_NAME, action='store',
                                        help='Name of the local source Database')
         
-        source_group.add_argument('--source-use-local-db', dest='source_use_local_dump',
+        source_group.add_argument('--source-use-local-db', dest='source_use_local_db',
                                   default=C.SOURCE_USE_LOCAL_DB, action='store_true',
                                   help='Indicates if you want to use a local database or not')
         source_group.add_argument('--source-use-local-dump', dest='source_use_local_dump',
@@ -148,4 +148,4 @@ class CLI(object):
         else:
             die('You must specify where the dump is going to. Use --help')
             
-        destination.run()
+        return destination.run()
