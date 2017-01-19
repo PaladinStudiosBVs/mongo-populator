@@ -19,27 +19,16 @@
 
 ########################################################
 
-from populator.utils.text import to_text
+import unittest
+
+import populator.constants as C
 
 
-class MongoPopulatorError(Exception):
-    def __init__(self, message='', obj=None, show_content=True):
-        self._obj = obj
-        self._show_content = show_content
-        self.message = '%s' % to_text(message)
-
-    def __str__(self):
-        return self.message
-    
-    def __repr__(self):
-        return self.message
-
-
-class MongoPopulatorOptionsError(MongoPopulatorError):
-    """ Bad or incomplete options passed """
-    pass
-
-
-class MongoPopulatorNoSourceError(MongoPopulatorError):
-    """ No source dump or database specified """
-    pass
+class TestConstants(unittest.TestCase):
+    def test_make_boolean(self):
+        self.assertTrue(C.make_boolean('1'))
+        self.assertTrue(C.make_boolean('yes'))
+        self.assertTrue(C.make_boolean('on'))
+        self.assertTrue(C.make_boolean('true'))
+        self.assertTrue(C.make_boolean('t'))
+        self.assertTrue(C.make_boolean('y'))

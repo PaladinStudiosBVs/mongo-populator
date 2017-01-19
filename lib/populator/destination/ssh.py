@@ -67,4 +67,4 @@ class SSHDestination(SSHPopulator, MongoConfig, MongoDestination):
                 color='green'
             )
         else:
-            die('Problems restoring remote database: {}'.format(restore_str))
+            die('Problems restoring remote database ({})'.format(exit_status))

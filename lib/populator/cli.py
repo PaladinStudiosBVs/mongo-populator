@@ -27,6 +27,7 @@ from populator.source.local import LocalDumpSource, LocalDbSource
 from populator.source.ssh import SSHSource
 from populator.destination.local import LocalDestination
 from populator.destination.ssh import SSHDestination
+from populator.errors import MongoPopulatorNoSourceError
 
 
 class CLI(object):
@@ -164,9 +165,9 @@ class CLI(object):
         elif self.options['source_use_s3']:
             source = None
         else:
-            die('You must specify the source of your dump. Use --help')
+            raise MongoPopulatorNoSourceError()
             
-        # Now let's check the destination. The order is local db > ssh
+        # Now let's check the destination. The order is local dump > local db > ssh > s3
         destination = None
         if self.options['destination_use_local_db']:
             destination = LocalDestination(

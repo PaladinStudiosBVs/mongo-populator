@@ -12,7 +12,7 @@
 NAME = mongo-populator
 OS = $(shell uname -s)
 
-PYTHON=python
+PYTHON=python3
 
 VERSION := $(shell cat VERSION | cut -f1 -d' ')
 
@@ -47,8 +47,7 @@ DEB_PPA ?= ppa
 DEB_DIST ?= unstable
 
 # Test parameters
-MONGO_POPULATOR_TEST ?= test/runner/mongo-populator-test
-PYTHON_VERSION ?= $(shell python3 -c 'import sys; print("%s.%s" % sys.version_info[:2])')
+PYTHON_VERSION ?= $(shell $(PYTHON) -c 'import sys; print("%s.%s" % sys.version_info[:2])')
 
 # Integration parameters (make integration)
 IMAGE ?= centos7
@@ -57,7 +56,7 @@ TARGET ?=
 ########################################################
 
 tests:
-	$(MONGO_POPULATOR_TEST) units -v --python $(PYTHON_VERSION) $(TEST_FLAGS)
+	$(shell $(PYTHON) -m test.runner)
 
 integration:
 	$(MONGO_POPULATOR_TEST) integration -v --docker $(IMAGE) $(TARGET) $(TEST_FLAGS)

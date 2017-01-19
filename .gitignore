@@ -2,6 +2,7 @@
 *.py[co]
 build/
 dist/
+.eggs/
 
 # PyCharm
 .idea
@@ -32,6 +33,8 @@ tmp
 results.xml
 coverage.xml
 /test/units/cover-html
+.coverage
+nosetests.xml
 
 # Development
 /test/develop

@@ -19,27 +19,25 @@
 
 ########################################################
 
-from populator.utils.text import to_text
+import sys
+import nose
+from os.path import abspath, dirname
 
 
-class MongoPopulatorError(Exception):
-    def __init__(self, message='', obj=None, show_content=True):
-        self._obj = obj
-        self._show_content = show_content
-        self.message = '%s' % to_text(message)
-
-    def __str__(self):
-        return self.message
+def run_all(argv=None):
+    if argv is None:
+        argv = [
+            'nosetests', '--with-xunit',
+            '--with-xcoverage', '--cover-erase',
+            '--logging-filter=mongo-populator', '--logging-level=DEBUG',
+            '--verbose',
+        ]
     
-    def __repr__(self):
-        return self.message
+    nose.run_exit(
+        argv=argv,
+        defaultTest=abspath(dirname(__file__))
+    )
 
 
-class MongoPopulatorOptionsError(MongoPopulatorError):
-    """ Bad or incomplete options passed """
-    pass
-
-
-class MongoPopulatorNoSourceError(MongoPopulatorError):
-    """ No source dump or database specified """
-    pass
+if __name__ == '__main__':
+    run_all(sys.argv)

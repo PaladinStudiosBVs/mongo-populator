@@ -41,7 +41,6 @@ def make_boolean(value):
 
 def shell_expand(path, expand_relative_paths=False):
     """
-    This is needed, since os.path.expanduser doesn't work
     :param path:
     :param expand_relative_paths:
     :return:
