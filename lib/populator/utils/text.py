@@ -57,14 +57,14 @@ def to_text(obj, encoding='utf-8', errors=None, nonstring='simplerepr'):
                 value = repr(obj)
             except UnicodeError:
                 # Giving up
-                return u''
+                return ''
     elif nonstring == 'passthru':
         return obj
     elif nonstring == 'empty':
-        return u''
+        return ''
     elif nonstring == 'strict':
         raise TypeError('obj must be a string type')
     else:
-        raise TypeError(f"Invalid value {nonstring} for to_text's nonstring parameter")
+        raise TypeError(f'Invalid value {nonstring} for to_text\'s nonstring parameter')
 
     return to_text(value, encoding, errors)

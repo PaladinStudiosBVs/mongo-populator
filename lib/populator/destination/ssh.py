@@ -28,7 +28,7 @@ from populator.destination import MongoDestination
 
 class SSHDestination(SSHPopulator, MongoConfig, MongoDestination):
     def __init__(self, db_name=None, db_user=None, db_password=None, ssh_host=None, ssh_user=None, ssh_password=None,
-                 key_file=None, source=None):
+                 ssh_key_file=None, source=None):
         MongoConfig.__init__(self, db_name, db_user=db_user, db_password=db_password)
         MongoDestination.__init__(self, source)
         SSHPopulator.__init__(
@@ -36,7 +36,7 @@ class SSHDestination(SSHPopulator, MongoConfig, MongoDestination):
             ssh_host=ssh_host,
             ssh_user=ssh_user,
             ssh_password=ssh_password,
-            key_file=key_file
+            ssh_key_file=ssh_key_file
         )
         
     def _populate(self):

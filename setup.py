@@ -14,7 +14,7 @@ setup(
     author=__author__,
     url='https://github.com/PaladinStudiosBVs',
     license='GPLv3',
-    install_requires=['paramiko', 'scp'],
+    install_requires=['boto3', 'paramiko', 'scp'],
     package_dir={'': 'lib'},
     packages=find_packages('lib'),
     classifiers=[

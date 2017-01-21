@@ -12,13 +12,22 @@ In order to install Mongo Populator, follow these steps:
 Here are are the current supported use cases:
 ### From a dump in a local directory to a local Mongo database.
 ```
-# mongo-populator --source-use-local-dump --source-dump-dir <dump-directory> --destination-use-local-db --destination-db-name <db-name> 
+mongo-populator --source-use-local-dump \
+                --source-dump-dir /path/to/dump/directory \
+                --destination-use-local-db \
+                --destination-db-name <db-name> 
 ```
 
 ### From a dump in a local directory to a remote Mongo database (via SSH)
 ```
-# mongo-populator --source-use-local-dump --source-dump-dir <dump-directory> --destination-use-ssh --destination-db-name <db-name>
---destination-ssh-host <host> --destination-ssh-user <user> --destintion-ssh-password <password> --destination-ssh-identity-file <file>
+mongo-populator   --source-use-local-dump \
+                  --source-dump-dir /path/to/dump/directory \
+                  --destination-use-ssh \
+                  --destination-db-name <db-name> \
+                  --destination-ssh-host <host> \
+                  --destination-ssh-user <user> \
+                  --destintion-ssh-password <password> \
+                  --destination-ssh-identity-file <file>
 ```
 
 Note that if you specify a password, most likely you won't need to specify the identity file. The same goes for if you specify
@@ -28,11 +37,23 @@ to specify neither the password or the identity file.
 ### From a remote Mongo database (via SSH) to a remote Mongo database (via SSH)
  Snevens
 ```
-# mongo-populator --source-use-ssh --source-ssh-host <host> --source-ssh-user <user> [--source-ssh-password <password>]
-[--source-ssh-key-file <path-to-identity-file>] --source-db-name <db-name> [--source-db-user <db-user>]
-[--source-db-password <db-password>] --destination-use-ssh --destination-ssh-host <host> --destination-ssh-user <user>
-[--destination-ssh-password <password>] [--destination-ssh-key-file <path-to-identity-file>] [--destination-drop-db]
---destination-db-name <db-name> [--destination-db-user <db-user] [--destination-db-password <db-password>]
+#mongo-populator --source-use-ssh \
+                 --source-ssh-host <host> \
+                 --source-ssh-user <user> \
+                 [--source-ssh-password <password>] \
+                 [--source-ssh-key-file <path-to-identity-file>] \
+                 --source-db-name <db-name> \
+                 [--source-db-user <db-user>] \
+                 [--source-db-password <db-password>] \
+                 --destination-use-ssh \
+                 --destination-ssh-host <host> \
+                 --destination-ssh-user <user> \
+                 [--destination-ssh-password <password>] \
+                 [--destination-ssh-key-file <path-to-identity-file>] \
+                 [--destination-drop-db] \
+                 --destination-db-name <db-name> \
+                 [--destination-db-user <db-user] \
+                 [--destination-db-password <db-password>]
 ```
 
 ## Command-line options
@@ -57,7 +78,7 @@ Source:
                                 Directory where the source dump is located (default: None)
   --source-tmp-dir              SOURCE_TMP_DIR
                                 Directory where source dumps will be copied to
-                                (default: /Users/pmpro/.mongo-populator/dump)
+                                (default: ~/.mongo-populator/dump)
   --source-use-ssh              Indicates if you want to connect to source DB via SSH
                                 (default: False)
   --source-ssh-host             SOURCE_SSH_HOST
@@ -87,7 +108,7 @@ Destination:
                                 destination database. (default: False)
   --destination-ssh-host        DESTINATION_SSH_HOST
                                 SSH host we're connecting to if we decide to use SSH
-                                for the source (default: 52.209.222.134)
+                                for the source (default: 127.0.0.1)
   --destination-ssh-user        DESTINATION_SSH_USER
                                 SSH user to connect to destination (default: None)
   --destination-ssh-password    DESTINATION_SSH_PASSWORD
@@ -149,25 +170,49 @@ directory. If it doesn't find, then it will try to locate *~/.mongo-populator.cf
 try to locate /etc/mongo-populator/mongo-populator.cfg. If none of these exist, then it will use default values. 
 Here is an example of a configuration file:
 
-```
+```ini
 [defaults]
 
+# Unless you are using a local directory with a dump or an Amazon S3
+# bucket, you'll have to fill in these. The values should be either of
+# your local source database or your local
 #source_db_name =
 #source_db_user =
 #source_db_password =
 
+# Set this to True if you intend to extract a dump from a database running
+# locally.
 #source_use_local_db = False
+
+# If you want to use a dump in a local directory instead, set this to True
+# and change source_dump_dir accordingly, with a path to the dump directory.
 #source_use_local_dump = True
-#source_dump_dir = ~/.mongo-populator/dump/
+#source_dump_dir =
+
+# When extracting a dump from a database, mongo-populator stores it locally.
+# Use this property to specify where dumps should be stored or leave it as is.
+# A new dump from a database called xpto will exist in ~/.mongo-populator/dump/%Y%m%d-%H%M%S/xpto
 source_tmp_dir = ~/.mongo-populator/dump
 
+# Set source_use_ssh to True in case you need to access your source database
+# via SSH. You should also fill in the following properties with the correct values.
+# If you specify a key file, most likely you won't need to specify the password,
+# and vice-versa.
 #source_use_ssh = False
 #source_ssh_host = 127.0.0.1
 #source_ssh_user =
 #source_ssh_password =
 #source_ssh_key_file =
 
+# Sometimes, the source database is running inside a docker container.
+# In such situation, mongodump must be executed inside the container and
+# the output directory must be copied from the container to the host.
+#source_is_dockerized = False
+
 #source_use_s3 = False
+#source_s3_access_key_id =
+#source_s3_secret_access_key =
+#source_s3_region =
 
 #destination_db_name =
 #destination_db_user =
@@ -182,7 +227,11 @@ source_tmp_dir = ~/.mongo-populator/dump
 #destination_ssh_password =
 #destination_ssh_key_file =
 
-# don't like colors?
+#destination_use_s3 = False
+#destination_s3_access_key_id =
+#destination_s3_secret_access_key =
+#destination_s3_region =
+
 # set to 1 if you don't want colors, or export MONGO_POPULATOR_NOCOLOR=1
 #nocolor = 1
 
@@ -202,7 +251,6 @@ source_tmp_dir = ~/.mongo-populator/dump
 #diff_lines = cyan
 ```
 
-Lines startig with *#* are comments and will be ignored.
  
 ## License
 Click on the [Link](https://github.com/PaladinStudiosBVs/mongo-populator/blob/master/COPYING) to see the full text.

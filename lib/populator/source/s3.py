@@ -19,8 +19,27 @@
 
 ########################################################
 
-from populator.source import MongoPopulator
+from datetime import datetime
+import os
+
+from populator import AmazonS3Populator
+from populator.source import MongoSource
 
 
-class MongoAmazonS3Populator(MongoPopulator):
-    pass
+class AmazonS3Source(MongoSource, AmazonS3Populator):
+    def __init__(self, aws_access_key_id=None, aws_secret_access_key=None, tmp_dir=None):
+        MongoSource.__init__(self, tmp_dir)
+        AmazonS3Populator.__init__(self, aws_access_key_id, aws_secret_access_key)
+    
+    def get_dump_dir(self):
+        # We create the local dump dir
+        i = datetime.now().strftime('%Y%m%d-%H%M%S')
+        tmpdir = os.path.join(self.tmp_dir, i)
+        os.makedirs(tmpdir)
+        
+        # Now we iterate over all
+        for obj in self.bucket.objects.filter(Prefix=''):
+            if not obj.key.endswith('/'):
+                self.bucket.download_file(
+                    obj.key, obj.key.split('/')[-1]
+                )

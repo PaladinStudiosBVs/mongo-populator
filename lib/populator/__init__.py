@@ -19,12 +19,13 @@
 
 ########################################################
 
+import boto3
 import paramiko
 from paramiko.client import SSHClient
 from scp import SCPClient
 
-from populator.utils.mongo import check_for_mongo_tools
 from populator.utils.common import info
+from populator.utils.mongo import check_for_mongo_tools
 
 
 class MongoConfig(object):
@@ -92,7 +93,7 @@ class SSHPopulator(object):
     Both source and destination populators should inherit from this class if they are
     to use SSH to communicate with the database.
     """
-    def __init__(self, ssh_host=None, ssh_user=None, ssh_password=None, key_file=None):
+    def __init__(self, ssh_host=None, ssh_user=None, ssh_password=None, ssh_key_file=None):
         """
         :type ssh_host: str
         :param ssh_host: Hostname we're connecting to
@@ -100,17 +101,17 @@ class SSHPopulator(object):
         :param ssh_user:
         :type ssh_password: str
         :param ssh_password:
-        :type key_file: str
-        :param key_file: Full path to an identity file.
+        :type ssh_key_file: str
+        :param ssh_key_file: Full path to an identity file.
         """
         self.ssh_client = SSHClient()
         self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if key_file:
-            self.ssh_client.connect(ssh_host, username=ssh_user, key_filename=key_file)
-        elif ssh_password:
-            self.ssh_client.connect(ssh_host, username=ssh_user, password=ssh_password)
-        else:
-            self.ssh_client.connect(ssh_host, username=ssh_user)
+        self.ssh_client.connect(**{
+            'hostname': ssh_host,
+            'username': ssh_user,
+            'password': ssh_password,
+            'key_filename': ssh_key_file
+        })
             
         self.scp_client = SCPClient(self.ssh_client.get_transport())
         
@@ -120,3 +121,25 @@ class SSHPopulator(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.scp_client.close()
         self.ssh_client.close()
+        
+        
+class AmazonS3Populator(object):
+    """ todo """
+    def __init__(self, bucket, prefix=None, aws_access_key_id=None, aws_secret_access_key=None):
+        """
+        todo
+        :type bucket: str
+        :param bucket:
+        :type prefix: str
+        :param prefix:
+        :type aws_access_key_id: str
+        :param aws_access_key_id:
+        :type aws_secret_access_key: str
+        :param aws_secret_access_key:
+        """
+        self.client = boto3.resource(
+            's3',
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key
+        )
+        self.bucket = self.client.Bucket(bucket)

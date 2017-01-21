@@ -1,1 +1,3 @@
 paramiko
+scp
+boto3

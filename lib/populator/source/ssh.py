@@ -29,7 +29,7 @@ from populator.utils.common import info, die
 
 class SSHSource(SSHPopulator, MongoConfig, MongoSource):
     def __init__(self, db_name=None, db_user=None, db_password=None, ssh_host=None, ssh_user=None, ssh_password=None,
-                 key_file=None, tmp_dir=None):
+                 ssh_key_file=None, tmp_dir=None):
         """
         :type db_name: str
         :param db_name:
@@ -39,8 +39,8 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
         :param ssh_user:
         :type ssh_password: str
         :param ssh_password:
-        :type key_file: str
-        :param key_file: Path to identity file
+        :type ssh_key_file: str
+        :param ssh_key_file: Path to identity file
         :type tmp_dir: str
         :param tmp_dir:
         """
@@ -51,7 +51,7 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
             ssh_host=ssh_host,
             ssh_user=ssh_user,
             ssh_password=ssh_password,
-            key_file=key_file
+            ssh_key_file=ssh_key_file
         )
         
     def get_dump_dir(self):
@@ -92,11 +92,11 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
         self.scp_client.get('{}/{}'.format(remote_dump_dir, self.db_name), tmpdir, recursive=True)
         
         # And we finally delete the temporary directory in the source
-        #_, stdout, _ = self.ssh_client.exec_command('rm -Rf {}'.format(remote_dump_dir))
-        #exit_status = stdout.channel.recv_exit_status()
-        #if exit_status == 0:
+        # _, stdout, _ = self.ssh_client.exec_command('rm -Rf {}'.format(remote_dump_dir))
+        # exit_status = stdout.channel.recv_exit_status()
+        # if exit_status == 0:
         #    info('Created a dump in the remote source: {}'.format(dump_str))
-        #else:
+        # else:
         #    die('Problems creating a dump in the remote source')
         
         return '{}/{}'.format(tmpdir, self.db_name)
