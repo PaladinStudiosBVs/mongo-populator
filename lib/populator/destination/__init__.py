@@ -22,7 +22,6 @@
 from abc import ABCMeta, abstractmethod
 
 from populator import PopulatorCtxManager
-from populator.utils.common import info
 
 
 class MongoDestination(PopulatorCtxManager, metaclass=ABCMeta):
@@ -41,4 +40,3 @@ class MongoDestination(PopulatorCtxManager, metaclass=ABCMeta):
     def run(self):
         self.dump_dir = self.source.get_dump_dir()
         self._populate()
-        #shutil.rmtree(self.dump_dir)

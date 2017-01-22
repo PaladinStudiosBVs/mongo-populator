@@ -125,7 +125,8 @@ class SSHPopulator(object):
         
 class AmazonS3Populator(object):
     """ todo """
-    def __init__(self, bucket, prefix=None, aws_access_key_id=None, aws_secret_access_key=None):
+    def __init__(self, bucket, prefix=None, aws_access_key_id=None, aws_secret_access_key=None,
+                 region_name=None):
         """
         todo
         :type bucket: str
@@ -136,10 +137,14 @@ class AmazonS3Populator(object):
         :param aws_access_key_id:
         :type aws_secret_access_key: str
         :param aws_secret_access_key:
+        :type region_name: str
+        :param region_name:
         """
         self.client = boto3.resource(
             's3',
             aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key
+            aws_secret_access_key=aws_secret_access_key,
+            region_name=region_name
         )
         self.bucket = self.client.Bucket(bucket)
+        self.prefix = prefix

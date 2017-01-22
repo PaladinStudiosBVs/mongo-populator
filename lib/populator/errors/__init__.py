@@ -41,5 +41,18 @@ class MongoPopulatorOptionsError(MongoPopulatorError):
 
 
 class MongoPopulatorNoSourceError(MongoPopulatorError):
-    """ No source dump or database specified """
+    """ No source dump, s3 bucket or database specified """
+    pass
+
+
+class MongoPopulatorNoDestinationError(MongoPopulatorError):
+    """ No destination directory, s3 bucket or database specified"""
+    pass
+
+
+class MongoPopulatorNoS3BucketError(MongoPopulatorError):
+    """
+    When you want to use Amazon S3 as source or destination and don't
+    specify a bucket
+    """
     pass

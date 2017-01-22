@@ -23,12 +23,17 @@ import argparse
 
 from populator import constants as C
 from populator.destination.local import LocalDestination
+from populator.destination.s3 import AmazonS3Destination
 from populator.destination.ssh import SSHDestination
-from populator.errors import MongoPopulatorNoSourceError
+from populator.errors import (
+    MongoPopulatorNoDestinationError,
+    MongoPopulatorNoS3BucketError,
+    MongoPopulatorNoSourceError
+)
 from populator.source.local import LocalDbSource, LocalDumpSource
 from populator.source.s3 import AmazonS3Source
 from populator.source.ssh import SSHSource
-from populator.utils.common import die, info
+from populator.utils.common import info
 
 
 class CLI(object):
@@ -134,6 +139,20 @@ class CLI(object):
 
         self.options = vars(parser.parse_args(self.args[1:]))
         # Any aditional transformations needed should go here
+        
+    def _build_kwargs(self, prefixes, replacement):
+        """
+        :type prefixes: list[str]
+        :param prefixes: List of accepted prefixes of keys for the dictionary
+        :type replacement: str
+        :param replacement: Whatever we pass here will be replaced by an empty string
+        :rtype: dict
+        :return:
+        """
+        d = {k.replace(replacement, ''): v for k, v in
+             list(filter(lambda x: any(map(lambda y: str.startswith(x[0], y), prefixes)), self.options))}
+        
+        return d
     
     def run(self):
         """
@@ -142,7 +161,7 @@ class CLI(object):
         :return:
         """
         if C.CONFIG_FILE:
-            info(f'Using {C.CONFIG_FILE} as configuration file', color='blue')
+            info('Using %s as configuration file' % C.CONFIG_FILE, color='blue')
         else:
             info('No configuration file found. Using default values.', color='yellow')
             
@@ -155,18 +174,22 @@ class CLI(object):
             source = LocalDbSource(db_name=self.options['source_db_name'])
             
         elif self.options['source_use_ssh']:
-            opts = {k.replace('source_', ''): v for k, v in self.options.items()
-                    if k.startswith('source_db') or k.startswith('source_ssh')}
-            source = SSHSource(**opts)
+            source = SSHSource(
+                **self._build_kwargs(['source_db', 'source_ssh', 'source_tmp'], 'source_')
+            )
             
         elif self.options['source_use_s3']:
-            source = AmazonS3Source()
+            if not self.options['source_s3_bucket']:
+                raise MongoPopulatorNoS3BucketError()
+            
+            source = AmazonS3Source(
+                **self._build_kwargs(['source_s3', 'source_tmp'], 'source_')
+            )
             
         else:
             raise MongoPopulatorNoSourceError()
             
         # Now let's check the destination. The order is local dump > local db > ssh > s3
-        destination = None
         if self.options['destination_use_local_db']:
             destination = LocalDestination(
                 source=source,
@@ -174,18 +197,19 @@ class CLI(object):
             )
             
         elif self.options['destination_use_ssh']:
-            destination = SSHDestination(
-                db_name=self.options['destination_db_name'],
-                db_user=self.options['destination_db_user'],
-                db_password=self.options['destination_db_password'],
-                ssh_host=self.options['destination_ssh_host'],
-                ssh_user=self.options['destination_ssh_user'],
-                ssh_password=self.options['destination_ssh_password'],
-                ssh_key_file=self.options['destination_ssh_key_file'],
-                source=source,
-            )
+            opts = self._build_kwargs(['destination_db', 'destination_ssh'], 'destination_')
+            opts['source'] = source
+            destination = SSHDestination(**opts)
+            
+        elif self.options['destination_use_s3']:
+            if not self.options['destination_s3_bucket']:
+                raise MongoPopulatorNoS3BucketError()
+            
+            opts = self._build_kwargs(['destination_s3'], 'destination_')
+            opts['source'] = source
+            destination = AmazonS3Destination(**opts)
             
         else:
-            die('You must specify where the dump is going to. Use --help')
+            raise MongoPopulatorNoDestinationError()
             
         return destination.run()

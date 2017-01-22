@@ -148,8 +148,8 @@ SOURCE_DB_PASSWORD = get_config(p, DEFAULTS, 'source_db_password', 'MONGO_POPULA
 
 SOURCE_USE_LOCAL_DB = get_config(p, DEFAULTS, 'source_use_local_db', 'MONGO_POPULATOR_SOURCE_USE_LOCAL_DB', False, value_type='boolean')
 SOURCE_USE_LOCAL_DUMP = get_config(p, DEFAULTS, 'source_use_local_dump', 'MONGO_POPULATOR_SOURCE_USE_LOCAL_DUMP', False, value_type='boolean')
-SOURCE_DUMP_DIR = get_config(p, DEFAULTS, 'source_dump_dir', 'MONGO_POPULATOR_SOURCE_DUMP_DIR', '~/.mongo-populator/dump/', value_type='path')
-SOURCE_TMP_DIR = get_config(p, DEFAULTS, 'source_tmp_dir', 'MONGO_POPULATOR_SOURCE_TMP_DIR', '~/.mongo-populator/tmp/', value_type='path')
+SOURCE_DUMP_DIR = get_config(p, DEFAULTS, 'source_dump_dir', 'MONGO_POPULATOR_SOURCE_DUMP_DIR', '~/.mongo-populator/dump', value_type='path')
+SOURCE_TMP_DIR = get_config(p, DEFAULTS, 'source_tmp_dir', 'MONGO_POPULATOR_SOURCE_TMP_DIR', '~/.mongo-populator/tmp/source', value_type='path')
 
 SOURCE_USE_SSH = get_config(p, DEFAULTS, 'source_use_ssh', 'MONGO_POPULATOR_SOURCE_USE_SSH', False, value_type='boolean')
 SOURCE_SSH_HOST = get_config(p, DEFAULTS, 'source_ssh_host', 'MONGO_POPULATOR_SOURCE_SSH_HOST', '127.0.0.1')
@@ -160,6 +160,11 @@ SOURCE_SSH_KEY_FILE = get_config(p, DEFAULTS, 'source_ssh_key_file', 'MONGO_POPU
 SOURCE_IS_DOCKERIZED = get_config(p, DEFAULTS, 'source_is_dockerized', 'MONGO_POPULATOR_SOURCE_IS_DOCKERIZED', False, value_type='boolean')
 
 SOURCE_USE_S3 = get_config(p, DEFAULTS, 'source_use_s3', 'MONGO_POPULATOR_SOURCE_USE_S3', False, value_type='boolean')
+SOURCE_S3_ACCESS_KEY_ID = get_config(p, DEFAULTS, 'source_s3_access_key_id', 'MONGO_POPULATOR_SOURCE_S3_ACCESS_KEY_ID', None)
+SOURCE_S3_SECRET_ACCESS_KEY = get_config(p, DEFAULTS, 'source_s3_secret_access_key', 'MONGO_POPULATOR_SOURCE_S3_SECRET_ACCESS_KEY', None)
+SOURCE_S3_REGION_NAME = get_config(p, DEFAULTS, 'source_s3_region_name', 'MONGO_POPULATOR_SOURCE_S3_REGION_NAME', None)
+SOURCE_S3_BUCKET = get_config(p, DEFAULTS, 'source_s3_bucket', 'MONGO_POPULATOR_SOURCE_S3_BUCKET', None)
+SOURCE_S3_PREFIX = get_config(p, DEFAULTS, 'source_s3_prefix', 'MONGO_POPULATOR_SOURCE_S3_PREFIX', None)
 
 DESTINATION_DB_NAME = get_config(p, DEFAULTS, 'destination_db_name', 'MONGO_POPULATOR_DESTINATION_DB_NAME', None)
 DESTINATION_DB_USER = get_config(p, DEFAULTS, 'destination_db_user', 'MONGO_POPULATOR_DESTINATION_DB_USER', None)
@@ -173,6 +178,13 @@ DESTINATION_SSH_HOST = get_config(p, DEFAULTS, 'destination_ssh_host', 'MONGO_PO
 DESTINATION_SSH_USER = get_config(p, DEFAULTS, 'destination_ssh_user', 'MONGO_POPULATOR_DESTINATION_SSH_USER', None)
 DESTINATION_SSH_PASSWORD = get_config(p, DEFAULTS, 'destination_ssh_password', 'MONGO_POPULATOR_DESTINATION_SSH_PASSWORD', None)
 DESTINATION_SSH_KEY_FILE = get_config(p, DEFAULTS, 'destination_ssh_key_file', 'MONGO_POPULATOR_DESTINATION_SSH_KEY_FILE', None)
+
+DESTINATION_USE_S3 = get_config(p, DEFAULTS, 'destination_use_s3', 'MONGO_POPULATOR_DESTINATION_USE_S3', False, value_type='boolean')
+DESTINATION_S3_ACCESS_KEY_ID = get_config(p, DEFAULTS, 'destination_s3_access_key_id', 'MONGO_POPULATOR_DESTINATION_S3_ACCESS_KEY_ID', None)
+DESTINATION_S3_SECRET_ACCESS_KEY = get_config(p, DEFAULTS, 'destination_s3_secret_access_key', 'MONGO_POPULATOR_DESTINATION_S3_SECRET_ACCESS_KEY', None)
+DESTINATION_S3_REGION_NAME = get_config(p, DEFAULTS, 'destination_s3_region_name', 'MONGO_POPULATOR_DESTINATION_S3_REGION_NAME', None)
+DESTINATION_S3_BUCKET = get_config(p, DEFAULTS, 'destination_s3_bucket', 'MONGO_POPULATOR_DESTINATION_S3_BUCKET', None)
+DESTINATION_S3_PREFIX = get_config(p, DEFAULTS, 'destination_s3_prefix', 'MONGO_POPULATOR_DESTINATION_S3_PREFIX', None)
 
 # Display
 MONGO_POPULATOR_FORCE_COLOR = get_config(p, DEFAULTS, 'force_color', 'MONGO_POPULATOR_FORCE_COLOR', None, value_type='boolean')
