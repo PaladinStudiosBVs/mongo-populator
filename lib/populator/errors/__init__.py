@@ -66,3 +66,11 @@ class MongoPopulatorTemporaryRemoteDirectoryCreationError(MongoPopulatorError):
 class MongoPopulatorRestoringRemoteDatabaseError(MongoPopulatorError):
     """ When an error occurs while trying to restore a remote database """
     pass
+
+
+class MongoPopulatorNoDockerContainerNameError(MongoPopulatorError):
+    """
+    When source database is dockerized and the name of the container
+    was not supplied.
+    """
+    pass

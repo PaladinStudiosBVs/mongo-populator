@@ -25,11 +25,12 @@ from datetime import datetime
 from populator import SSHPopulator, MongoConfig
 from populator.source import MongoSource
 from populator.utils.common import info, die
+from populator.utils.text import to_text
 
 
 class SSHSource(SSHPopulator, MongoConfig, MongoSource):
     def __init__(self, db_name=None, db_user=None, db_password=None, ssh_host=None, ssh_user=None, ssh_password=None,
-                 ssh_key_file=None, tmp_dir=None):
+                 ssh_key_file=None, tmp_dir=None, is_dockerized=False, docker_container_name=None):
         """
         :type db_name: str
         :param db_name:
@@ -53,51 +54,86 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
             ssh_password=ssh_password,
             ssh_key_file=ssh_key_file
         )
+        self.is_dockerized = is_dockerized
+        self.container_name = docker_container_name
         
     def get_dump_dir(self):
         """
         :rtype: str
         :return:
         """
-        # We first create a dump in the remote DB
         prefix = datetime.now().strftime('%Y%m%d-%H%M%S')
-        
+        # We first create a dump in the remote DB
+    
         # mongodump creates a directory named after the database, se we
         # exclude the db_name from the remote dump directory. It will be
         # created implicitly.
         remote_dump_dir = os.path.join('/tmp/mongodumps', prefix)
         _, stdout, _ = self.ssh_client.exec_command('mkdir -p {}'.format(remote_dump_dir))
         exit_status = stdout.channel.recv_exit_status()
+        info(
+            'Temporary directory created in remote source (): {}'.format(remote_dump_dir),
+            color='green'
+        )
         if exit_status == 0:
-            info(
-                'Temporary directory created in remote source: {}'.format(remote_dump_dir),
-                color='green'
-            )
+            pass
         else:
             die('Problems creating temporary directory in remote source')
-        
-        # Then we run mongodump in the remote host
+    
         dump_str = self.get_dump_str() % remote_dump_dir
-        stdin, stdout, stderr = self.ssh_client.exec_command(
-            dump_str
-        )
-        exit_status = stdout.channel.recv_exit_status()
-        if exit_status == 0:
-            info(
-                'Created a dump in the remote source: {}'.format(dump_str),
-                color='green'
-            )
-        else:
-            die('Problems creating a dump in the remote source')
+        # The database is running inside a Docker container. We need to
+        # do a little trick here, to avoid empty dumps
+        if self.is_dockerized:
+            # Create dump inside container
+            cmd = 'docker exec -i {} {}'.format(self.container_name, dump_str)
+            info('Creating dump inside container: {}'.format(cmd), color='purple')
+            _, stdout, stderr = self.ssh_client.exec_command(cmd)
+            exit_status = stdout.channel.recv_exit_status()
         
+            if exit_status == 0:
+                info('Dump successfully created inside container.', color='green')
+            else:
+                die(to_text(stdout.channel.recv_stderr(65536)))
+        
+            # Copy dump from container to remote host
+            cmd = 'docker cp {}:{} {}'.format(
+                self.container_name,
+                os.path.join(remote_dump_dir, self.db_name),
+                remote_dump_dir
+            )
+            info(
+                'Copying dump from container to remote host: {}'.format(cmd),
+                color='purple'
+            )
+            _, stdout, _ = self.ssh_client.exec_command(cmd)
+            exit_status = stdout.channel.recv_exit_status()
+            if exit_status == 0:
+                info('Dump successfully extracted from container.', color='green')
+            else:
+                die('Problems extracting dump from container.')
+    
+        else:
+            # If the database is not containerized, we just run the dump normally
+            # on the remote server.
+            stdin, stdout, stderr = self.ssh_client.exec_command(dump_str)
+            exit_status = stdout.channel.recv_exit_status()
+        
+            if exit_status == 0:
+                info(
+                    'Created a dump in the remote source: {}'.format(dump_str),
+                    color='green'
+                )
+            else:
+                die('Problems creating a dump in the remote source')
+    
         # Now we need to add the db_name to the remote_dump_dir
         remote_dump_dir = os.path.join(remote_dump_dir, self.db_name)
-        
+    
         # Create the local dump dir
         tmpdir = os.path.join(self.tmp_dir, prefix)
-        info('Creating local dump dir: {}'.format(tmpdir))
+        info('Creating local dump dir: {}'.format(tmpdir), color='purple')
         os.makedirs(tmpdir)
         self.scp_client.get(remote_dump_dir, tmpdir, recursive=True)
         tmpdir = os.path.join(tmpdir, self.db_name)
-        
+    
         return tmpdir, prefix

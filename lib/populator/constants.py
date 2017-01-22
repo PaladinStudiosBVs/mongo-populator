@@ -158,6 +158,7 @@ SOURCE_SSH_PASSWORD = get_config(p, DEFAULTS, 'source_ssh_password', 'MONGO_POPU
 SOURCE_SSH_KEY_FILE = get_config(p, DEFAULTS, 'source_ssh_key_file', 'MONGO_POPULATOR_SOURCE_SSH_KEY_FILE', None)
 
 SOURCE_IS_DOCKERIZED = get_config(p, DEFAULTS, 'source_is_dockerized', 'MONGO_POPULATOR_SOURCE_IS_DOCKERIZED', False, value_type='boolean')
+SOURCE_DOCKER_CONTAINER_NAME = get_config(p, DEFAULTS, 'source_docker_container_name', 'MONGO_POPULATOR_SOURCE_DOCKER_CONTAINER_NAME', None)
 
 SOURCE_USE_S3 = get_config(p, DEFAULTS, 'source_use_s3', 'MONGO_POPULATOR_SOURCE_USE_S3', False, value_type='boolean')
 SOURCE_S3_ACCESS_KEY_ID = get_config(p, DEFAULTS, 'source_s3_access_key_id', 'MONGO_POPULATOR_SOURCE_S3_ACCESS_KEY_ID', None)

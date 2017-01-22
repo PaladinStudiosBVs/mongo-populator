@@ -26,6 +26,7 @@ from populator.destination.local import LocalDestination
 from populator.destination.s3 import AmazonS3Destination
 from populator.destination.ssh import SSHDestination
 from populator.errors import (
+    MongoPopulatorNoDockerContainerNameError,
     MongoPopulatorNoDestinationError,
     MongoPopulatorNoS3BucketError,
     MongoPopulatorNoSourceError
@@ -100,6 +101,13 @@ class CLI(object):
         source_group.add_argument('--source-ssh-key-file', dest='source_ssh_key_file',
                                   default=C.SOURCE_SSH_KEY_FILE, action='store',
                                   help='SSH identity file to use to connect to host')
+        # Docker
+        source_group.add_argument('--source-is-dockerized', dest='source_is_dockerized', default=C.SOURCE_IS_DOCKERIZED,
+                                  action='store_true',
+                                  help='Indicates whether the source database is running inside Docker or not.')
+        source_group.add_argument('--source-docker-container-name', dest='source_docker_container_name',
+                                  default=C.SOURCE_DOCKER_CONTAINER_NAME, action='store',
+                                  help='The name of the Docker container where the database is running')
         # Source Amazon S3 configurations
         source_group.add_argument('--source-use-s3', dest='source_use_s3', default=C.SOURCE_USE_S3,
                                   action='store_true',
@@ -172,6 +180,10 @@ class CLI(object):
         
         return d
     
+    def check_containerization(self):
+        if self.options['source_is_dockerized'] and not self.options['source_docker_container_name']:
+            raise MongoPopulatorNoDockerContainerNameError()
+    
     def run(self):
         """
         This is where the main action happens. After having parsed the cli arguments,
@@ -192,8 +204,19 @@ class CLI(object):
             source = LocalDbSource(db_name=self.options['source_db_name'])
             
         elif self.options['source_use_ssh']:
+            self.check_containerization()
+            
             source = SSHSource(
-                **self._build_kwargs(['source_db', 'source_ssh', 'source_tmp'], 'source_')
+                **self._build_kwargs(
+                    [
+                        'source_db',
+                        'source_ssh',
+                        'source_tmp',
+                        'source_is_dockerized',
+                        'source_docker'
+                    ],
+                    'source_'
+                )
             )
             
         elif self.options['source_use_s3']:

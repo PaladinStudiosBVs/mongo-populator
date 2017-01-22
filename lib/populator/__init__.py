@@ -113,7 +113,7 @@ class SSHPopulator(object):
             'key_filename': ssh_key_file
         })
             
-        self.scp_client = SCPClient(self.ssh_client.get_transport())
+        self.scp_client = SCPClient(self.ssh_client.get_transport(), socket_timeout=10.0)
         
     def __enter_extra_init(self):
         pass

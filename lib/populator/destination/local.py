@@ -24,7 +24,6 @@ from subprocess import CalledProcessError
 
 from populator import MongoConfig
 from populator.destination import MongoDestination
-from populator.utils.common import info
 
 
 class LocalDestination(MongoConfig, MongoDestination):
@@ -35,7 +34,7 @@ class LocalDestination(MongoConfig, MongoDestination):
     def _populate(self):
         try:
             subprocess.run(
-                self.get_restore_str() % '{}/{}'.format(self.dump_dir, self.db_name),
+                self.get_restore_str() % self.dump_dir,
                 stderr=subprocess.STDOUT,
                 shell=True
             )
