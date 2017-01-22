@@ -192,7 +192,7 @@ source_db_password = test_password
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # Set this to True if you intend to extract a dump from a database running
 # locally.
-#source_use_local_db = False
+source_use_local_db = True
 
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # If you want to use a dump in a local directory instead, set this to True
@@ -238,20 +238,20 @@ source_docker_container_name = test_db_container
 #source_s3_prefix =
 
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#destination_db_name =
-#destination_db_user =
-#destination_db_password =
-#destinatin_drop_db = True
+destination_db_name = some_db_name
+destination_db_user = some_db_user
+destination_db_password = some_db_password
+destinatin_drop_db = True
 
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#destination_use_local_db = True
+#destination_use_local_db = False
 
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#destination_use_ssh = False
-#destination_ssh_host = 127.0.0.1
-#destination_ssh_user =
-#destination_ssh_password =
-#destination_ssh_key_file =
+destination_use_ssh = True
+destination_ssh_host = 123.123.123.123
+destination_ssh_user = ubuntu
+destination_ssh_password =
+destination_ssh_key_file = /path/to/key.pem
 
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #destination_use_s3 = False
