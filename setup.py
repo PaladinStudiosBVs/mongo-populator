@@ -12,7 +12,7 @@ setup(
     version=__version__,
     description='Ridiculously easy to use tool for populating Mongo databases',
     author=__author__,
-    url='https://github.com/PaladinStudiosBVs',
+    url='https://github.com/PaladinStudiosBVs/mongo-populator',
     license='GPLv3',
     install_requires=['boto3', 'paramiko', 'scp'],
     package_dir={'': 'lib'},

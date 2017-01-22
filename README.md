@@ -7,6 +7,10 @@ In order to install Mongo Populator, follow these steps:
  1. `git clone https://github.com/PaladinStudiosBVs/mongo-populator.git`
  2. (optional) `make tests`
  3. `sudo make install`
+ 4. **Note for macports users**: the executable file *mongo-populator* will be copied to
+ `/opt/local/Library/Frameworks/Python.framework/Versions/Current/bin/`. So unless you have
+ this directory in your PATH, you will have to create a symbolic link inside some directory
+ in your PATH to the executable in the former directory.
  
 ## Usage
 Here are are the current supported use cases:
@@ -177,29 +181,32 @@ try to locate /etc/mongo-populator/mongo-populator.cfg. If none of these exist, 
 Here is an example of a configuration file:
 
 ```ini
-[defaults]
-
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # Unless you are using a local directory with a dump or an Amazon S3
 # bucket, you'll have to fill in these. The values should be either of
 # your local source database or your local
-#source_db_name =
-#source_db_user =
-#source_db_password =
+source_db_name = test_db
+source_db_user = test_user
+source_db_password = test_password
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # Set this to True if you intend to extract a dump from a database running
 # locally.
 #source_use_local_db = False
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # If you want to use a dump in a local directory instead, set this to True
 # and change source_dump_dir accordingly, with a path to the dump directory.
 #source_use_local_dump = True
-#source_dump_dir =
+#source_dump_dir = /path/to/dump/directory
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # When extracting a dump from a database, mongo-populator stores it locally.
 # Use this property to specify where dumps should be stored or leave it as is.
 # A new dump from a database called xpto will exist in ~/.mongo-populator/dump/%Y%m%d-%H%M%S/xpto
 source_tmp_dir = ~/.mongo-populator/dump
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # Set source_use_ssh to True in case you need to access your source database
 # via SSH. You should also fill in the following properties with the correct values.
 # If you specify a key file, most likely you won't need to specify the password,
@@ -210,33 +217,49 @@ source_tmp_dir = ~/.mongo-populator/dump
 #source_ssh_password =
 #source_ssh_key_file =
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # Sometimes, the source database is running inside a docker container.
 # In such situation, mongodump must be executed inside the container and
 # the output directory must be copied from the container to the host.
-#source_is_dockerized = False
+source_is_dockerized = True
+source_docker_container_name = test_db_container
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+# In case you want to populate a Mongo database with a dump stored
+# in Amazon S3. Note that if you have aws command-line tools and if you
+# have configured your credentials using `aws configure`, then you don't
+# need to fill in the access_key_id, the secret_access_key and the region,
+# as long as your credentials give you access to the bucket.
 #source_use_s3 = False
 #source_s3_access_key_id =
 #source_s3_secret_access_key =
 #source_s3_region =
+#source_s3_bucket =
+#source_s3_prefix =
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #destination_db_name =
 #destination_db_user =
 #destination_db_password =
 #destinatin_drop_db = True
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #destination_use_local_db = True
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #destination_use_ssh = False
 #destination_ssh_host = 127.0.0.1
 #destination_ssh_user =
 #destination_ssh_password =
 #destination_ssh_key_file =
 
+#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #destination_use_s3 = False
 #destination_s3_access_key_id =
 #destination_s3_secret_access_key =
 #destination_s3_region =
+#destination_s3_bucket =
+#destination_s3_prefix =
 
 # set to 1 if you don't want colors, or export MONGO_POPULATOR_NOCOLOR=1
 #nocolor = 1
