@@ -25,8 +25,10 @@ from populator import PopulatorCtxManager
 
 
 class MongoSource(PopulatorCtxManager, metaclass=ABCMeta):
-    def __init__(self, tmp_dir=None):
+    def __init__(self, tmp_dir=None, is_dockerized=False, docker_container_name=None):
         self.tmp_dir = tmp_dir
+        self.is_dockerized = is_dockerized
+        self.container_name = docker_container_name
         
     @abstractmethod
     def get_dump_dir(self):

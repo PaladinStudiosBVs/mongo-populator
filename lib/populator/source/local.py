@@ -19,8 +19,14 @@
 
 ########################################################
 
+from datetime import datetime
+import os
+import subprocess
+
 from populator import MongoConfig
 from populator.source import MongoSource
+from populator.utils.common import info
+from populator.utils.docker import get_dump_from_container
 
 
 class LocalDumpSource(MongoSource):
@@ -32,9 +38,51 @@ class LocalDumpSource(MongoSource):
     
 
 class LocalDbSource(MongoConfig, MongoSource):
-    def __init__(self, db_name):
-        MongoConfig.__init__(self, db_name)
+    def __init__(self, db_name, db_user=None, db_password=None, drop_db=True, tmp_dir=None,
+                 is_dockerized=False, docker_container_name=None):
+        MongoConfig.__init__(
+            self,
+            db_name,
+            db_user=db_user,
+            db_password=db_password,
+            drop_db=drop_db
+        )
+        MongoSource.__init__(
+            self,
+            tmp_dir=tmp_dir,
+            is_dockerized=is_dockerized,
+            docker_container_name=docker_container_name
+        )
         
     def get_dump_dir(self):
-        # todo
-        return ''
+        # Create local dump directory
+        prefix = datetime.now().strftime('%Y%m%d-%H%M%S')
+        tmpdir = os.path.join(self.tmp_dir, prefix)
+        info('Creating local dump dir: {}'.format(tmpdir), color='purple')
+        os.makedirs(tmpdir)
+
+        dump_str = self.get_dump_str() % tmpdir
+        
+        # Is our local database running inside Docker?
+        if self.is_dockerized:
+            get_dump_from_container(
+                self.db_name,
+                dump_str,
+                tmpdir,
+                self.container_name
+            )
+        else:
+            # If not, just dump the database to the previously
+            # created directory
+            mongo_dump = subprocess.check_output(
+                dump_str,
+                encoding="utf-8",
+                stderr=subprocess.STDOUT,
+                shell=True
+            )
+    
+            info(mongo_dump, color='dark gray')
+
+        tmpdir = os.path.join(tmpdir, self.db_name)
+        
+        return tmpdir, prefix

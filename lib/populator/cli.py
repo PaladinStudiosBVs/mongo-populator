@@ -201,7 +201,19 @@ class CLI(object):
             source = LocalDumpSource(self.options['source_dump_dir'])
             
         elif self.options['source_use_local_db']:
-            source = LocalDbSource(db_name=self.options['source_db_name'])
+            self.check_containerization()
+            
+            source = LocalDbSource(
+                **self._build_kwargs(
+                    [
+                        'source_db',
+                        'source_tmp',
+                        'source_is_dockerized',
+                        'source_docker'
+                    ],
+                    'source_'
+                )
+            )
             
         elif self.options['source_use_ssh']:
             self.check_containerization()
@@ -224,7 +236,10 @@ class CLI(object):
                 raise MongoPopulatorNoS3BucketError()
             
             source = AmazonS3Source(
-                **self._build_kwargs(['source_s3', 'source_tmp'], 'source_')
+                **self._build_kwargs(
+                    ['source_s3', 'source_tmp'],
+                    'source_'
+                )
             )
             
         else:
@@ -238,7 +253,10 @@ class CLI(object):
             )
             
         elif self.options['destination_use_ssh']:
-            opts = self._build_kwargs(['destination_db', 'destination_ssh'], 'destination_')
+            opts = self._build_kwargs(
+                ['destination_db', 'destination_ssh'],
+                'destination_'
+            )
             opts['source'] = source
             destination = SSHDestination(**opts)
             

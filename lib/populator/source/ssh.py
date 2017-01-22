@@ -25,7 +25,7 @@ from datetime import datetime
 from populator import SSHPopulator, MongoConfig
 from populator.source import MongoSource
 from populator.utils.common import info, die
-from populator.utils.text import to_text
+from populator.utils.docker import get_dump_from_container
 
 
 class SSHSource(SSHPopulator, MongoConfig, MongoSource):
@@ -46,7 +46,12 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
         :param tmp_dir:
         """
         MongoConfig.__init__(self, db_name, db_user=db_user, db_password=db_password)
-        MongoSource.__init__(self, tmp_dir=tmp_dir)
+        MongoSource.__init__(
+            self,
+            tmp_dir=tmp_dir,
+            is_dockerized=is_dockerized,
+            docker_container_name=docker_container_name
+        )
         SSHPopulator.__init__(
             self,
             ssh_host=ssh_host,
@@ -54,8 +59,6 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
             ssh_password=ssh_password,
             ssh_key_file=ssh_key_file
         )
-        self.is_dockerized = is_dockerized
-        self.container_name = docker_container_name
         
     def get_dump_dir(self):
         """
@@ -84,33 +87,13 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
         # The database is running inside a Docker container. We need to
         # do a little trick here, to avoid empty dumps
         if self.is_dockerized:
-            # Create dump inside container
-            cmd = 'docker exec -i {} {}'.format(self.container_name, dump_str)
-            info('Creating dump inside container: {}'.format(cmd), color='purple')
-            _, stdout, stderr = self.ssh_client.exec_command(cmd)
-            exit_status = stdout.channel.recv_exit_status()
-        
-            if exit_status == 0:
-                info('Dump successfully created inside container.', color='green')
-            else:
-                die(to_text(stdout.channel.recv_stderr(65536)))
-        
-            # Copy dump from container to remote host
-            cmd = 'docker cp {}:{} {}'.format(
+            get_dump_from_container(
+                self.db_name,
+                dump_str,
+                remote_dump_dir,
                 self.container_name,
-                os.path.join(remote_dump_dir, self.db_name),
-                remote_dump_dir
+                ssh_client=self.ssh_client
             )
-            info(
-                'Copying dump from container to remote host: {}'.format(cmd),
-                color='purple'
-            )
-            _, stdout, _ = self.ssh_client.exec_command(cmd)
-            exit_status = stdout.channel.recv_exit_status()
-            if exit_status == 0:
-                info('Dump successfully extracted from container.', color='green')
-            else:
-                die('Problems extracting dump from container.')
     
         else:
             # If the database is not containerized, we just run the dump normally
