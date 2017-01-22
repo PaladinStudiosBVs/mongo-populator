@@ -12,6 +12,10 @@ In order to install Mongo Populator, follow these steps:
  this directory in your PATH, you will have to create a symbolic link inside some directory
  in your PATH to the executable in the former directory.
  
+## Compatibility notes
+Mongo Populator is supposed to work with Python 3.3+. If you want your version of Python to be
+supported, feel free to contribute to the project.
+ 
 ## Usage
 Here are are the current supported use cases:
 ### From a dump in a local directory to a local Mongo database.
@@ -203,8 +207,8 @@ source_use_local_db = True
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # When extracting a dump from a database, mongo-populator stores it locally.
 # Use this property to specify where dumps should be stored or leave it as is.
-# A new dump from a database called xpto will exist in ~/.mongo-populator/dump/%Y%m%d-%H%M%S/xpto
-source_tmp_dir = ~/.mongo-populator/dump
+# A new dump from a database called xpto will exist in ~/.mongo-populator/tmp/%Y%m%d-%H%M%S/xpto
+source_tmp_dir = ~/.mongo-populator/tmp
 
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 # Set source_use_ssh to True in case you need to access your source database
