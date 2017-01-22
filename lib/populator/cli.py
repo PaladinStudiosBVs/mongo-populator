@@ -62,6 +62,7 @@ class CLI(object):
         
         # Source
         source_group = parser.add_argument_group('Source')
+        # Source DB configurations
         source_group.add_argument('--source-db-name', dest='source_db_name',
                                   default=C.SOURCE_DB_NAME, action='store',
                                   help='Name of the local source Database')
@@ -74,16 +75,18 @@ class CLI(object):
         source_group.add_argument('--source-use-local-db', dest='source_use_local_db',
                                   default=C.SOURCE_USE_LOCAL_DB, action='store_true',
                                   help='Indicates if you want to use a local database or not')
+        # Source local dump
         source_group.add_argument('--source-use-local-dump', dest='source_use_local_dump',
                                   default=C.SOURCE_USE_LOCAL_DUMP, action='store_true',
                                   help='Indicates if you want to use a local dump or not')
         source_group.add_argument('--source-dump-dir', dest='source_dump_dir', default=C.SOURCE_DUMP_DIR,
                                   action='store',
                                   help='Directory where the source dump is located')
+        # Source temporary directory for dumps
         source_group.add_argument('--source-tmp-dir', dest='source_tmp_dir', default=C.SOURCE_TMP_DIR,
                                   action='store',
                                   help='Directory where source dumps will be copied to')
-
+        # Source SSH configurations
         source_group.add_argument('--source-use-ssh', dest='source_use_ssh', default=C.SOURCE_USE_SSH,
                                   action='store_true', help='Indicates if you want to connect to source DB via SSH')
         source_group.add_argument('--source-ssh-host', dest='source_ssh_host', default=C.SOURCE_SSH_HOST,
@@ -97,10 +100,25 @@ class CLI(object):
         source_group.add_argument('--source-ssh-key-file', dest='source_ssh_key_file',
                                   default=C.SOURCE_SSH_KEY_FILE, action='store',
                                   help='SSH identity file to use to connect to host')
-
+        # Source Amazon S3 configurations
         source_group.add_argument('--source-use-s3', dest='source_use_s3', default=C.SOURCE_USE_S3,
                                   action='store_true',
                                   help='Retrieve source dump from an Amazon S3 bucket')
+        source_group.add_argument('--source-s3-access-key-id', dest='source_s3_access_key_id',
+                                  default=C.SOURCE_S3_ACCESS_KEY_ID, action='store',
+                                  help='Access key to the Amazon S3 bucket')
+        source_group.add_argument('--source-s3-secret-access-key', dest='source_s3_secret_access_key',
+                                  default=C.SOURCE_S3_SECRET_ACCESS_KEY, action='store',
+                                  help='Secret access key to the Amazon S3 bucket')
+        source_group.add_argument('--source-s3-region-name', dest='source_s3_region_name',
+                                  default=C.SOURCE_S3_REGION_NAME, action='store',
+                                  help='Region used by the Amazon S3 bucket (e.g. eu-west-1)')
+        source_group.add_argument('--source-s3-bucket', dest='source_s3_bucket',
+                                  default=C.SOURCE_S3_BUCKET, action='store',
+                                  help='Amazon S3 bucket where the dump is stored')
+        source_group.add_argument('--source-s3-prefix', dest='source_s3_prefix',
+                                  default=C.SOURCE_S3_PREFIX, action='store',
+                                  help='Prefix to be use when fetching objects from the S3 bucket')
         
         # Destination
         destination_group = parser.add_argument_group('Destination')
@@ -150,7 +168,7 @@ class CLI(object):
         :return:
         """
         d = {k.replace(replacement, ''): v for k, v in
-             list(filter(lambda x: any(map(lambda y: str.startswith(x[0], y), prefixes)), self.options))}
+             list(filter(lambda x: any(map(lambda y: str.startswith(x[0], y), prefixes)), list(self.options.items())))}
         
         return d
     

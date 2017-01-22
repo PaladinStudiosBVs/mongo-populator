@@ -19,11 +19,11 @@
 
 ########################################################
 
-from datetime import datetime
 import os
 
 from populator import AmazonS3Populator
 from populator.source import MongoSource
+from populator.utils.common import info
 
 
 class AmazonS3Source(MongoSource, AmazonS3Populator):
@@ -51,17 +51,26 @@ class AmazonS3Source(MongoSource, AmazonS3Populator):
     def get_dump_dir(self):
         # We create the local tmp dir
         tmpdir = os.path.join(self.tmp_dir, self.prefix)
+        info(
+            'Creating temporary dump directory: {}'.format(tmpdir),
+            color='green'
+        )
         os.makedirs(tmpdir)
         
         # Now we iterate over all objects in the S3 bucket and
         # copy to the tmp dir all the objects that have a certain
         # prefix. The prefix is a way of indicating a directory tree
         # inside a bucket.
+        info(
+            'Copying files from S3 bucket ({})'.format(self.bucket),
+            color='green'
+        )
         for obj in self.bucket.objects.filter(Prefix=self.prefix):
             if not obj.key.endswith('/'):
+                info('-> {}'.format(obj.key), color='dark gray')
                 self.bucket.download_file(
                     obj.key,
                     os.path.join(tmpdir, obj.key.split('/')[-1])
                 )
                 
-        return tmpdir
+        return tmpdir, self.prefix

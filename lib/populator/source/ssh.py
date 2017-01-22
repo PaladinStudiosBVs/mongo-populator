@@ -60,8 +60,12 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
         :return:
         """
         # We first create a dump in the remote DB
-        i = datetime.now().strftime('%Y%m%d-%H%M%S')
-        remote_dump_dir = '/tmp/mongodumps/{}'.format(i)
+        prefix = datetime.now().strftime('%Y%m%d-%H%M%S')
+        
+        # mongodump creates a directory named after the database, se we
+        # exclude the db_name from the remote dump directory. It will be
+        # created implicitly.
+        remote_dump_dir = os.path.join('/tmp/mongodumps', prefix)
         _, stdout, _ = self.ssh_client.exec_command('mkdir -p {}'.format(remote_dump_dir))
         exit_status = stdout.channel.recv_exit_status()
         if exit_status == 0:
@@ -86,17 +90,14 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
         else:
             die('Problems creating a dump in the remote source')
         
-        # We create the local dump dir
-        tmpdir = '{}/{}'.format(self.tmp_dir, i)
+        # Now we need to add the db_name to the remote_dump_dir
+        remote_dump_dir = os.path.join(remote_dump_dir, self.db_name)
+        
+        # Create the local dump dir
+        tmpdir = os.path.join(self.tmp_dir, prefix)
+        info('Creating local dump dir: {}'.format(tmpdir))
         os.makedirs(tmpdir)
-        self.scp_client.get('{}/{}'.format(remote_dump_dir, self.db_name), tmpdir, recursive=True)
+        self.scp_client.get(remote_dump_dir, tmpdir, recursive=True)
+        tmpdir = os.path.join(tmpdir, self.db_name)
         
-        # And we finally delete the temporary directory in the source
-        # _, stdout, _ = self.ssh_client.exec_command('rm -Rf {}'.format(remote_dump_dir))
-        # exit_status = stdout.channel.recv_exit_status()
-        # if exit_status == 0:
-        #    info('Created a dump in the remote source: {}'.format(dump_str))
-        # else:
-        #    die('Problems creating a dump in the remote source')
-        
-        return '{}/{}'.format(tmpdir, self.db_name)
+        return tmpdir, prefix

@@ -20,10 +20,15 @@
 ########################################################
 
 from datetime import datetime
+import os
 
-from populator.utils.common import info, die
 from populator import SSHPopulator, MongoConfig
+from populator.errors import (
+    MongoPopulatorRestoringRemoteDatabaseError,
+    MongoPopulatorTemporaryRemoteDirectoryCreationError
+)
 from populator.destination import MongoDestination
+from populator.utils.common import info
 
 
 class SSHDestination(SSHPopulator, MongoConfig, MongoDestination):
@@ -42,29 +47,43 @@ class SSHDestination(SSHPopulator, MongoConfig, MongoDestination):
     def _populate(self):
         # We now have a directory with the database dump, so we must first
         # copy that to the destination
-        remote_dump_dir = '/tmp/mongodumps/{}'.format(datetime.now().strftime('%Y%m%d-%H%M%S'))
+        self.prefix = self.prefix or datetime.now().strftime('%Y%m%d-%H%M%S')
+        
+        remote_dump_dir = os.path.join('/tmp/mongodumps', self.prefix)
+        
+        info(
+            'Creating remote dump dir: {}'.format(remote_dump_dir),
+            color='green'
+        )
+        
         _, stdout, _ = self.ssh_client.exec_command('mkdir -p {}'.format(remote_dump_dir))
         exit_status = stdout.channel.recv_exit_status()
+        
         if exit_status == 0:
             info(
-                'Temporary directory created in remote source: {}'.format(remote_dump_dir),
+                'Temporary directory created in remote destination: {}'.format(remote_dump_dir),
                 color='green'
             )
         else:
-            die('Problems creating temporary directory in remote source')
+            raise MongoPopulatorTemporaryRemoteDirectoryCreationError()
         
         self.scp_client.put(self.dump_dir, remote_dump_dir, recursive=True)
-        # Then we run mongoresture in the remote host
-        restore_str = self.get_restore_str() % \
-                      '{}/{}'.format(remote_dump_dir, self.dump_dir.split('/')[-1])
-        stdin, stdout, stderr = self.ssh_client.exec_command(
-            restore_str
+        
+        remote_dump_dir = os.path.join(remote_dump_dir, self.db_name)
+        
+        # Then we run mongorestore in the remote host
+        restore_str = self.get_restore_str() % remote_dump_dir
+        info(
+            'Restoring remote database: {}'.format(restore_str),
+            color='purple'
         )
+        stdin, stdout, stderr = self.ssh_client.exec_command(restore_str)
         exit_status = stdout.channel.recv_exit_status()
+        
         if exit_status == 0:
             info(
                 'Successfully restored remote database: {}'.format(restore_str),
                 color='green'
             )
         else:
-            die('Problems restoring remote database ({})'.format(exit_status))
+            raise MongoPopulatorRestoringRemoteDatabaseError()

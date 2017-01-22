@@ -30,4 +30,8 @@ class MongoSource(PopulatorCtxManager, metaclass=ABCMeta):
         
     @abstractmethod
     def get_dump_dir(self):
+        """
+        :rtype: tuple[str, str]
+        :return:
+        """
         pass

@@ -39,3 +39,9 @@ class TestCLI(CLITestCase):
         self.assertEqual(c.options['source_db_user'], 'test_user')
         self.assertEqual(c.options['source_db_password'], 'test_password')
         self.assertEqual(c.options['source_use_local_db'], True)
+        
+        kwargs = c._build_kwargs(['source_db'], 'source_')
+        self.assertDictEqual(
+            kwargs,
+            {'db_name': 'test_db', 'db_user': 'test_user', 'db_password': 'test_password'}
+        )

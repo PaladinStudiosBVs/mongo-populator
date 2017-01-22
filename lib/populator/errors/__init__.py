@@ -56,3 +56,13 @@ class MongoPopulatorNoS3BucketError(MongoPopulatorError):
     specify a bucket
     """
     pass
+
+
+class MongoPopulatorTemporaryRemoteDirectoryCreationError(MongoPopulatorError):
+    """ When an error occurs while trying to create a directory in a remote host """
+    pass
+
+
+class MongoPopulatorRestoringRemoteDatabaseError(MongoPopulatorError):
+    """ When an error occurs while trying to restore a remote database """
+    pass

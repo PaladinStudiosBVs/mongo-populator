@@ -37,7 +37,7 @@ to specify neither the password or the identity file.
 ### From a remote Mongo database (via SSH) to a remote Mongo database (via SSH)
  Snevens
 ```
-#mongo-populator --source-use-ssh \
+mongo-populator --source-use-ssh \
                  --source-ssh-host <host> \
                  --source-ssh-user <user> \
                  [--source-ssh-password <password>] \
@@ -55,6 +55,12 @@ to specify neither the password or the identity file.
                  [--destination-db-user <db-user] \
                  [--destination-db-password <db-password>]
 ```
+
+### From an Amazon S3 bucket to a local Mongo database
+TODO
+
+### From an Amazon S3 bucket to a remote Mongo database (via SSH)
+TODO
 
 ## Command-line options
 Here is a full list of command-line options:
@@ -119,7 +125,7 @@ Destination:
 
 ## Environment variables
 Instead of providing command-line options, you can define environment variables with the desired values. Note that
-command-line options have the highest priority, which meands that if you provide them, the corresponding values will
+command-line options have the highest priority, which means that if you provide them, the corresponding values will
 be used instead. Here is a list of available environment variables that you can define:
 
 ```

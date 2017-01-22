@@ -32,11 +32,12 @@ class MongoDestination(PopulatorCtxManager, metaclass=ABCMeta):
         """
         self.source = source
         self.dump_dir = None
+        self.prefix = None
         
     @abstractmethod
     def _populate(self):
         pass
     
     def run(self):
-        self.dump_dir = self.source.get_dump_dir()
+        self.dump_dir, self.prefix = self.source.get_dump_dir()
         self._populate()
