@@ -29,23 +29,22 @@ from populator.utils.common import info
 from populator.utils.docker import get_dump_from_container
 
 
-class LocalDumpSource(MongoSource):
+class LocalDumpSource(object):
     def __init__(self, dump_dir):
         self.source_dump_dir = dump_dir
         
     def get_dump_dir(self):
-        return self.source_dump_dir
+        return self.source_dump_dir, None
     
 
-class LocalDbSource(MongoConfig, MongoSource):
-    def __init__(self, db_name, db_user=None, db_password=None, drop_db=True, tmp_dir=None,
+class LocalDbSource(MongoSource):
+    def __init__(self, db_name=None, db_user=None, db_password=None, tmp_dir=None,
                  is_dockerized=False, docker_container_name=None):
         MongoConfig.__init__(
             self,
-            db_name,
+            db_name=db_name,
             db_user=db_user,
             db_password=db_password,
-            drop_db=drop_db
         )
         MongoSource.__init__(
             self,

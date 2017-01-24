@@ -22,14 +22,20 @@
 import subprocess
 from subprocess import CalledProcessError
 
-from populator import MongoConfig
 from populator.destination import MongoDestination
 
 
-class LocalDestination(MongoConfig, MongoDestination):
-    def __init__(self, db_name, source):
-        MongoConfig.__init__(self, db_name)
-        MongoDestination.__init__(self, source)
+class LocalDestination(MongoDestination):
+    def __init__(self, db_name=None, db_user=None, db_password=None, drop_db=True, db_restore_indexes=False, source=None):
+        MongoDestination.__init__(
+            self,
+            source=source,
+            db_name=db_name,
+            db_user=db_user,
+            db_password=db_password,
+            drop_db=drop_db,
+            db_restore_indexes=db_restore_indexes
+        )
         
     def _populate(self):
         try:

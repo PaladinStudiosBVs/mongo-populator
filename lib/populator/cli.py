@@ -250,14 +250,16 @@ class CLI(object):
             
         # Now let's check the destination. The order is local dump > local db > ssh > s3
         if self.options['destination_use_local_db']:
-            destination = LocalDestination(
-                source=source,
-                db_name=self.options['destination_db_name']
+            opts = self._build_kwargs(
+                ['destination_db', 'destination_drop_db'],
+                'destination_'
             )
+            opts['source'] = source
+            destination = LocalDestination(**opts)
             
         elif self.options['destination_use_ssh']:
             opts = self._build_kwargs(
-                ['destination_db', 'destination_ssh'],
+                ['destination_db', 'destination_ssh', 'destination_drop_db'],
                 'destination_'
             )
             opts['source'] = source

@@ -31,11 +31,18 @@ from populator.destination import MongoDestination
 from populator.utils.common import info
 
 
-class SSHDestination(SSHPopulator, MongoConfig, MongoDestination):
-    def __init__(self, db_name=None, db_user=None, db_password=None, ssh_host=None, ssh_user=None, ssh_password=None,
-                 ssh_key_file=None, source=None):
-        MongoConfig.__init__(self, db_name=db_name, db_user=db_user, db_password=db_password)
-        MongoDestination.__init__(self, source)
+class SSHDestination(SSHPopulator, MongoDestination):
+    def __init__(self, db_name=None, db_user=None, db_password=None, drop_db=True, db_restore_indexes=False,
+                 ssh_host=None, ssh_user=None, ssh_password=None, ssh_key_file=None, source=None):
+        MongoDestination.__init__(
+            self,
+            db_name=db_name,
+            db_user=db_user,
+            db_password=db_password,
+            drop_db=drop_db,
+            db_restore_indexes=db_restore_indexes,
+            source=source
+        )
         SSHPopulator.__init__(
             self,
             ssh_host=ssh_host,
