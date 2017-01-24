@@ -269,19 +269,19 @@ destination_ssh_key_file = /path/to/key.pem
 #nocolor = 1
 
 [colors]
-#highlight = white
-#verbose = blue
-#warn = bright purple
-#error = red
-#debug = dark gray
-#deprecate = purple
-#skip = cyan
-#unreachable = red
-#ok = green
-#changed = yellow
-#diff_add = green
-#diff_remove = red
-#diff_lines = cyan
+highlight = white
+verbose = blue
+warn = bright purple
+error = red
+debug = dark gray
+deprecate = purple
+skip = cyan
+unreachable = red
+ok = green
+changed = yellow
+diff_add = green
+diff_remove = red
+diff_lines = cyan
 ```
 
  

@@ -34,7 +34,7 @@ from populator.utils.common import info
 class SSHDestination(SSHPopulator, MongoConfig, MongoDestination):
     def __init__(self, db_name=None, db_user=None, db_password=None, ssh_host=None, ssh_user=None, ssh_password=None,
                  ssh_key_file=None, source=None):
-        MongoConfig.__init__(self, db_name, db_user=db_user, db_password=db_password)
+        MongoConfig.__init__(self, db_name=db_name, db_user=db_user, db_password=db_password)
         MongoDestination.__init__(self, source)
         SSHPopulator.__init__(
             self,

@@ -21,11 +21,19 @@
 
 from abc import ABCMeta, abstractmethod
 
-from populator import PopulatorCtxManager
+from populator import MongoConfig, PopulatorCtxManager
 
 
-class MongoSource(PopulatorCtxManager, metaclass=ABCMeta):
-    def __init__(self, tmp_dir=None, is_dockerized=False, docker_container_name=None):
+class MongoSource(MongoConfig, PopulatorCtxManager, metaclass=ABCMeta):
+    def __init__(self, db_name=None, db_user=None, db_password=None, drop_db=True, tmp_dir=None, is_dockerized=False,
+                 docker_container_name=None):
+        MongoConfig.__init__(
+            self,
+            db_name=db_name,
+            db_user=db_user,
+            db_password=db_password,
+            drop_db=drop_db
+        )
         self.tmp_dir = tmp_dir
         self.is_dockerized = is_dockerized
         self.container_name = docker_container_name

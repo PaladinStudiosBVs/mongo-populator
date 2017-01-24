@@ -28,7 +28,7 @@ from populator.utils.common import info
 
 class AmazonS3Source(MongoSource, AmazonS3Populator):
     def __init__(self, s3_bucket, s3_prefix=None, s3_access_key_id=None, s3_secret_access_key=None,
-                 s3_region_name=None, tmp_dir=None):
+                 s3_region_name=None, tmp_dir=None, db_name=None):
         """
         todo
         :param s3_bucket:

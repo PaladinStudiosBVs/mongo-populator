@@ -22,15 +22,15 @@
 import os
 from datetime import datetime
 
-from populator import SSHPopulator, MongoConfig
+from populator import SSHPopulator
 from populator.source import MongoSource
 from populator.utils.common import info, die
 from populator.utils.docker import get_dump_from_container
 
 
-class SSHSource(SSHPopulator, MongoConfig, MongoSource):
-    def __init__(self, db_name=None, db_user=None, db_password=None, ssh_host=None, ssh_user=None, ssh_password=None,
-                 ssh_key_file=None, tmp_dir=None, is_dockerized=False, docker_container_name=None):
+class SSHSource(SSHPopulator, MongoSource):
+    def __init__(self, db_name=None, db_user=None, db_password=None, drop_db=True, ssh_host=None, ssh_user=None,
+                 ssh_password=None, ssh_key_file=None, tmp_dir=None, is_dockerized=False, docker_container_name=None):
         """
         :type db_name: str
         :param db_name:
@@ -45,9 +45,12 @@ class SSHSource(SSHPopulator, MongoConfig, MongoSource):
         :type tmp_dir: str
         :param tmp_dir:
         """
-        MongoConfig.__init__(self, db_name, db_user=db_user, db_password=db_password)
         MongoSource.__init__(
             self,
+            db_name=db_name,
+            db_user=db_user,
+            db_password=db_password,
+            drop_db=drop_db,
             tmp_dir=tmp_dir,
             is_dockerized=is_dockerized,
             docker_container_name=docker_container_name

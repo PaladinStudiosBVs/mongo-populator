@@ -139,6 +139,9 @@ class CLI(object):
         destination_group.add_argument('--destination-db-password', dest='destination_db_password',
                                        default=C.DESTINATION_DB_PASSWORD, action='store',
                                        help='Password to connect to destination database')
+        destination_group.add_argument('--destination-db-restore-indexes', dest='destination_db_restore_indexes',
+                                       default=C.DESTINATION_DB_RESTORE_INDEXES, action='store_true',
+                                       help='Indicates whether you want to restore indexes from the dump or not')
         destination_group.add_argument('--destination-drop-db', dest='destination_drop_db',
                                        default=C.DESTINATION_DROP_DB, action='store_true',
                                        help='Indicates whether you want to drop the destination database')
@@ -237,7 +240,7 @@ class CLI(object):
             
             source = AmazonS3Source(
                 **self._build_kwargs(
-                    ['source_s3', 'source_tmp'],
+                    ['source_db', 'source_s3', 'source_tmp'],
                     'source_'
                 )
             )

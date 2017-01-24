@@ -170,6 +170,7 @@ SOURCE_S3_PREFIX = get_config(p, DEFAULTS, 'source_s3_prefix', 'MONGO_POPULATOR_
 DESTINATION_DB_NAME = get_config(p, DEFAULTS, 'destination_db_name', 'MONGO_POPULATOR_DESTINATION_DB_NAME', None)
 DESTINATION_DB_USER = get_config(p, DEFAULTS, 'destination_db_user', 'MONGO_POPULATOR_DESTINATION_DB_USER', None)
 DESTINATION_DB_PASSWORD = get_config(p, DEFAULTS, 'destination_db_password', 'MONGO_POPULATOR_DESTINATION_DB_PASSWORD', None)
+DESTINATION_DB_RESTORE_INDEXES = get_config(p, DEFAULTS, 'destination_db_restore_indexes', 'MONGO_POPULATOR_DESTINATION_DB_RESTORE_INDEXES', False, value_type='boolean')
 DESTINATION_DROP_DB = get_config(p, DEFAULTS, 'destination_drop_db', 'MONGO_POPULATOR_DESTINATION_DROP_DB', False, value_type='boolean')
 
 DESTINATION_USE_LOCAL_DB = get_config(p, DEFAULTS, 'destination_use_local_db', 'MONGO_POPULATOR_DESTINATION_USE_LOCAL_DB', False, value_type='boolean')

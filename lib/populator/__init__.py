@@ -29,7 +29,7 @@ from populator.utils.mongo import check_for_mongo_tools
 
 
 class MongoConfig(object):
-    def __init__(self, db_name, db_user=None, db_password=None, drop_db=True):
+    def __init__(self, db_name, db_user=None, db_password=None, db_restore_indexes=False, drop_db=True):
         """
         :type db_name: str
         :param db_name:
@@ -43,6 +43,7 @@ class MongoConfig(object):
         self.db_name = db_name
         self.db_user = db_user
         self.db_password = db_password
+        self.db_restore_indexes = db_restore_indexes
         self.drop_db = drop_db
         
     def _get_cmd_str(self, cmd):
@@ -59,7 +60,8 @@ class MongoConfig(object):
             return 'mongodump {} {} --out %s {}'.format(user, password, db)
         elif cmd == 'restore':
             drop_db = '--drop' if self.drop_db else ''
-            return 'mongorestore {} {} {} {} %s'.format(user, password, drop_db, db)
+            restore_indexes = '--noIndexRestore' if not self.db_restore_indexes else ''
+            return 'mongorestore {} {} {} {} {} %s'.format(restore_indexes, user, password, drop_db, db)
         
         # todo - raise proper exception
         
