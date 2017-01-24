@@ -165,6 +165,25 @@ class CLI(object):
         destination_group.add_argument('--destination-ssh-key-file', dest='destination_ssh_key_file',
                                        default=C.DESTINATION_SSH_KEY_FILE, action='store',
                                        help='SSH identity file to use to connect to host')
+        # Destination Amazon S3 configurations
+        destination_group.add_argument('--destination-use-s3', dest='destination_use_s3', default=C.DESTINATION_USE_S3,
+                                  action='store_true',
+                                  help='Store dump in an Amazon S3 bucket')
+        destination_group.add_argument('--destination-s3-access-key-id', dest='destination_s3_access_key_id',
+                                  default=C.DESTINATION_S3_ACCESS_KEY_ID, action='store',
+                                  help='Access key to the Amazon S3 bucket')
+        destination_group.add_argument('--destination-s3-secret-access-key', dest='destination_s3_secret_access_key',
+                                  default=C.DESTINATION_S3_SECRET_ACCESS_KEY, action='store',
+                                  help='Secret access key to the Amazon S3 bucket')
+        destination_group.add_argument('--destination-s3-region-name', dest='destination_s3_region_name',
+                                  default=C.DESTINATION_S3_REGION_NAME, action='store',
+                                  help='Region used by the Amazon S3 bucket (e.g. eu-west-1)')
+        destination_group.add_argument('--destination-s3-bucket', dest='destination_s3_bucket',
+                                  default=C.DESTINATION_S3_BUCKET, action='store',
+                                  help='Amazon S3 bucket where the dump will stored')
+        destination_group.add_argument('--destination-s3-prefix', dest='destination_s3_prefix',
+                                  default=C.DESTINATION_S3_PREFIX, action='store',
+                                  help='Prefix to be used when storing objects in the S3 bucket')
 
         self.options = vars(parser.parse_args(self.args[1:]))
         # Any aditional transformations needed should go here
@@ -269,7 +288,9 @@ class CLI(object):
             if not self.options['destination_s3_bucket']:
                 raise MongoPopulatorNoS3BucketError()
             
-            opts = self._build_kwargs(['destination_s3'], 'destination_')
+            opts = self._build_kwargs(
+                ['destination_s3', 'destination_db'], 'destination_'
+            )
             opts['source'] = source
             destination = AmazonS3Destination(**opts)
             

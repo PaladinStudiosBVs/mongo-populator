@@ -24,6 +24,7 @@ import paramiko
 from paramiko.client import SSHClient
 from scp import SCPClient
 
+from populator.errors import MongoPopulatorUnknownCmdError
 from populator.utils.common import info
 from populator.utils.mongo import check_for_mongo_tools
 
@@ -48,7 +49,6 @@ class MongoConfig(object):
         
     def _get_cmd_str(self, cmd):
         """
-        
         :param cmd:
         :return:
         """
@@ -58,12 +58,17 @@ class MongoConfig(object):
         
         if cmd == 'dump':
             return 'mongodump {} {} --out %s {}'.format(user, password, db)
+        
         elif cmd == 'restore':
             drop_db = '--drop' if self.drop_db else ''
             restore_indexes = '--noIndexRestore' if not self.db_restore_indexes else ''
-            return 'mongorestore {} {} {} {} {} %s'.format(restore_indexes, user, password, drop_db, db)
+            
+            return 'mongorestore {} {} {} {} {} %s'.format(
+                restore_indexes, user, password, drop_db, db
+            )
         
-        # todo - raise proper exception
+        else:
+            raise MongoPopulatorUnknownCmdError()
         
     def get_dump_str(self):
         return self._get_cmd_str('dump')
@@ -127,7 +132,7 @@ class SSHPopulator(object):
         
 class AmazonS3Populator(object):
     """ todo """
-    def __init__(self, bucket, prefix=None, aws_access_key_id=None, aws_secret_access_key=None,
+    def __init__(self, bucket, s3_prefix=None, aws_access_key_id=None, aws_secret_access_key=None,
                  region_name=None):
         """
         todo
@@ -149,4 +154,4 @@ class AmazonS3Populator(object):
             region_name=region_name
         )
         self.bucket = self.client.Bucket(bucket)
-        self.prefix = prefix
+        self.s3_prefix = s3_prefix

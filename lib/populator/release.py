@@ -1,3 +1,3 @@
 # coding=utf-8
-__version__ = '0.0.1'
-__author__ = 'Paladin Studios'
+__version__ = '1.0.0'
+__author__ = 'Pedro Rodrigues <pedro@paladinstudios.com>'

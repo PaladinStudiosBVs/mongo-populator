@@ -28,7 +28,7 @@ from populator.utils.common import info
 
 class AmazonS3Source(MongoSource, AmazonS3Populator):
     def __init__(self, s3_bucket, s3_prefix=None, s3_access_key_id=None, s3_secret_access_key=None,
-                 s3_region_name=None, tmp_dir=None):
+                 s3_region_name=None, tmp_dir=None, **kwargs):
         """
         todo
         :param s3_bucket:
@@ -42,7 +42,7 @@ class AmazonS3Source(MongoSource, AmazonS3Populator):
         AmazonS3Populator.__init__(
             self,
             s3_bucket,
-            prefix=s3_prefix,
+            s3_prefix=s3_prefix,
             aws_access_key_id=s3_access_key_id,
             aws_secret_access_key=s3_secret_access_key,
             region_name=s3_region_name
@@ -50,7 +50,7 @@ class AmazonS3Source(MongoSource, AmazonS3Populator):
     
     def get_dump_dir(self):
         # We create the local tmp dir
-        tmpdir = os.path.join(self.tmp_dir, self.prefix)
+        tmpdir = os.path.join(self.tmp_dir, self.s3_prefix)
         info(
             'Creating temporary dump directory: {}'.format(tmpdir),
             color='green'
@@ -65,7 +65,7 @@ class AmazonS3Source(MongoSource, AmazonS3Populator):
             'Copying files from S3 bucket ({})'.format(self.bucket),
             color='green'
         )
-        for obj in self.bucket.objects.filter(Prefix=self.prefix):
+        for obj in self.bucket.objects.filter(Prefix=self.s3_prefix):
             if not obj.key.endswith('/'):
                 info('-> {}'.format(obj.key), color='dark gray')
                 self.bucket.download_file(
@@ -73,4 +73,4 @@ class AmazonS3Source(MongoSource, AmazonS3Populator):
                     os.path.join(tmpdir, obj.key.split('/')[-1])
                 )
                 
-        return tmpdir, self.prefix
+        return tmpdir, self.s3_prefix

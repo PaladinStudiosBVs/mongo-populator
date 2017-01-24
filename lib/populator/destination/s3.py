@@ -29,7 +29,7 @@ from populator.utils.common import info
 
 class AmazonS3Destination(MongoDestination, AmazonS3Populator):
     def __init__(self, s3_bucket, s3_prefix=None, s3_access_key_id=None, s3_secret_access_key=None,
-                 s3_region_name=None, source=None, db_name=None, db_user=None, db_password=None, drop_db=True):
+                 s3_region_name=None, source=None, db_name=None, db_user=None, db_password=None, drop_db=True, **kwargs):
         MongoDestination.__init__(
             self,
             source=source,
@@ -41,7 +41,7 @@ class AmazonS3Destination(MongoDestination, AmazonS3Populator):
         AmazonS3Populator.__init__(
             self,
             bucket=s3_bucket,
-            prefix=s3_prefix,
+            s3_prefix=s3_prefix,
             aws_access_key_id=s3_access_key_id,
             aws_secret_access_key=s3_secret_access_key,
             region_name=s3_region_name
@@ -49,7 +49,7 @@ class AmazonS3Destination(MongoDestination, AmazonS3Populator):
     
     def _populate(self):
         self.prefix = os.path.join(
-            self.prefix, datetime.now().strftime('%Y%m%d-%H%M%S'), self.source.db_name
+            self.s3_prefix, datetime.now().strftime('%Y%m%d-%H%M%S'), self.db_name
         )
         
         info('Copying files to Amazon S3 ({}): {}'.format(self.bucket, self.prefix), color='purple')

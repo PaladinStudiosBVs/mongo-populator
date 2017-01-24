@@ -30,7 +30,7 @@ from populator.utils.docker import get_dump_from_container
 
 
 class LocalDumpSource(object):
-    def __init__(self, dump_dir):
+    def __init__(self, dump_dir, **kwargs):
         self.source_dump_dir = dump_dir
         
     def get_dump_dir(self):
@@ -39,7 +39,7 @@ class LocalDumpSource(object):
 
 class LocalDbSource(MongoSource):
     def __init__(self, db_name=None, db_user=None, db_password=None, tmp_dir=None,
-                 is_dockerized=False, docker_container_name=None):
+                 is_dockerized=False, docker_container_name=None, **kwargs):
         MongoConfig.__init__(
             self,
             db_name=db_name,

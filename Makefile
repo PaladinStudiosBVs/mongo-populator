@@ -90,6 +90,7 @@ python:
 	$(PYTHON) setup.py build
 
 install:
+	$(PYTHON) -m pip install -r requirements.txt
 	$(PYTHON) setup.py install
 
 webdocs:

@@ -74,3 +74,8 @@ class MongoPopulatorNoDockerContainerNameError(MongoPopulatorError):
     was not supplied.
     """
     pass
+
+
+class MongoPopulatorUnknownCmdError(MongoPopulatorError):
+    """ When an unknown mongo command is passed to _get_cmd_str() """
+    pass
