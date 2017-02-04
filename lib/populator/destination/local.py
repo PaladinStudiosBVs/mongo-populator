@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# (c) 2017, Pedro Rodrigues <pedro@paladinstudios.com>
+# (c) 2017, Pedro Rodrigues <csixteen@gmail.com>
 #
 # This file is part of Mongo Populator
 #
@@ -26,7 +26,8 @@ from populator.destination import MongoDestination
 
 
 class LocalDestination(MongoDestination):
-    def __init__(self, db_name=None, db_user=None, db_password=None, drop_db=True, db_restore_indexes=False, source=None):
+    def __init__(self, db_name=None, db_user=None, db_password=None, drop_db=True,
+                 db_restore_indexes=False, source=None):
         MongoDestination.__init__(
             self,
             source=source,

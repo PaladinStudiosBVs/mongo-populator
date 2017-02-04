@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# (c) 2017, Pedro Rodrigues <pedro@paladinstudios.com>
+# (c) 2017, Pedro Rodrigues <csixteen@gmail.com>
 #
 # This file is part of Mongo Populator
 #
@@ -29,7 +29,8 @@ from populator.utils.common import info
 
 class AmazonS3Destination(MongoDestination, AmazonS3Populator):
     def __init__(self, s3_bucket, s3_prefix=None, s3_access_key_id=None, s3_secret_access_key=None,
-                 s3_region_name=None, source=None, db_name=None, db_user=None, db_password=None, drop_db=True, **kwargs):
+                 s3_region_name=None, source=None, db_name=None, db_user=None, db_password=None,
+                 drop_db=True, **kwargs):
         MongoDestination.__init__(
             self,
             source=source,

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# (c) 2017, Pedro Rodrigues <pedro@paladinstudios.com>
+# (c) 2017, Pedro Rodrigues <csixteen@gmail.com>
 #
 # This file is part of Mongo Populator
 #
@@ -138,8 +138,8 @@ class AmazonS3Populator(object):
         todo
         :type bucket: str
         :param bucket:
-        :type prefix: str
-        :param prefix:
+        :type s3_prefix: str
+        :param s3_prefix:
         :type aws_access_key_id: str
         :param aws_access_key_id:
         :type aws_secret_access_key: str

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# (c) 2017, Pedro Rodrigues <pedro@paladinstudios.com>
+# (c) 2017, Pedro Rodrigues <csixteen@gmail.com>
 #
 # This file is part of Mongo Populator
 #
@@ -58,7 +58,19 @@ def shell_expand(path, expand_relative_paths=False):
 
 
 def _get_config(p, section, key, env_var, default):
-    """ helper function for get_config """
+    """
+    :type p: configparser.ConfigParser
+    :param p:
+    :type section: str
+    :param section:
+    :type key: str
+    :param key:
+    :type env_var: str
+    :param env_var:
+    :param default:
+    :rtype: str
+    :return:
+    """
     value = default
 
     if p is not None:

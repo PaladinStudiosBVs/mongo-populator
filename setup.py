@@ -5,7 +5,7 @@ import sys
 from setuptools import setup, find_packages
 
 sys.path.insert(0, os.path.abspath('lib'))
-from populator.release import __author__, __version__
+from release import __author__, __version__
 
 setup(
     name='mongo-populator',

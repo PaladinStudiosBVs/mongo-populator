@@ -1,3 +1,6 @@
 paramiko
 scp
 boto3
+nose
+coverage
+nosexcover

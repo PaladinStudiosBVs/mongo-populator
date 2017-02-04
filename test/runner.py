@@ -28,7 +28,7 @@ def run_all(argv=None):
     if argv is None:
         argv = [
             'nosetests', '--with-xunit',
-            '--with-xcoverage', '--cover-erase',
+            '--with-xcoverage', '--cover-package=populator', '--cover-erase',
             '--logging-filter=mongo-populator', '--logging-level=DEBUG',
             '--verbose',
         ]
