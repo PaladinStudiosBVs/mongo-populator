@@ -19,20 +19,31 @@
 
 ########################################################
 
+from unittest.mock import patch, Mock
+
+from populator.cli import CLI
+
 from test.unit import CLITestCase
 
 
 class TestCLI(CLITestCase):
     def test_cli_flags_prevail(self):
-        TestCLI.populate_environment_variables()
-        from populator.cli import CLI
         c = CLI([
             'script_name',
-            '--source-db-name', 'test_db',
-            '--source-db-user', 'test_user',
-            '--source-db-password', 'test_password',
+            '--source-db-name', 'test_db_1',
+            '--source-db-user', 'test_user_1',
+            '--source-db-password', 'test_password_1',
             '--source-use-local-db',
         ])
+        c.parse()
+
+        self.assertEqual(c.options['source_db_name'], 'test_db_1')
+        self.assertEqual(c.options['source_db_user'], 'test_user_1')
+        self.assertEqual(c.options['source_db_password'], 'test_password_1')
+        self.assertEqual(c.options['source_use_local_db'], True)
+        
+    def test_cli_cwd_config_file(self):
+        c = CLI([])
         c.parse()
         
         self.assertEqual(c.options['source_db_name'], 'test_db')
@@ -40,8 +51,16 @@ class TestCLI(CLITestCase):
         self.assertEqual(c.options['source_db_password'], 'test_password')
         self.assertEqual(c.options['source_use_local_db'], True)
         
-        kwargs = c._build_kwargs(['source_db'], 'source_')
-        self.assertDictEqual(
-            kwargs,
-            {'db_name': 'test_db', 'db_user': 'test_user', 'db_password': 'test_password'}
-        )
+    def test_local_source_ssh_destination(self):
+        with patch('paramiko.client.SSHClient.connect', new_callable=Mock) as mock_ssh, \
+                patch('populator.source.local.LocalDbSource.get_dump_dir') as mock_dump_dir, \
+                patch('populator.destination.ssh.SSHDestination._populate') as mock_populate:
+            mock_dump_dir.return_value = 'dir_a', 'dir_b'
+            c = CLI([])
+            c.parse()
+            
+            c.run()
+            
+            mock_ssh.assert_called()
+            mock_dump_dir.assert_called()
+            mock_populate.assert_called()

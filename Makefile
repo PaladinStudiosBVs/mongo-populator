@@ -23,23 +23,9 @@ pep8:
 pyflakes:
 	pyflakes populator/*.py populator/*/*.py bin/*
 
-clean:
-	@echo "Cleaning up distutils stuff"
-	rm -rf build
-	rm -rf dist
-	@echo "Cleaning up byte compiled python stuff"
-	find . -type f -regex ".*\.py[co]$$" -delete
-	@echo "Cleaning up editor backup files"
-	find . -type f \( -name "*.swp" \) -delete
-	@echo "Cleaning up output from test runs"
-	rm -rf test/test_data
-	@echo "Cleaning up Debian building stuff"
-	rm -rf debian
-	rm -rf deb-build
-	rm -rf docs/json
-	rm -rf docs/js
-
 install:
+	@mkdir -p /etc/mongo-populator
+	@cp examples/mongo-populator.cfg /etc/mongo-populator
 	$(PYTHON) -m pip install -r requirements.txt
 	$(PYTHON) setup.py install
 

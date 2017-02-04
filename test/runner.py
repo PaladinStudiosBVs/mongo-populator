@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# (c) 2017, Pedro Rodrigues <pedro@paladinstudios.com>
+# (c) 2017, Pedro Rodrigues <csixteen@gmail.com>
 #
 # This file is part of Mongo Populator
 #
@@ -21,7 +21,7 @@
 
 import sys
 import nose
-from os.path import abspath, dirname
+import os
 
 
 def run_all(argv=None):
@@ -32,11 +32,17 @@ def run_all(argv=None):
             '--logging-filter=mongo-populator', '--logging-level=DEBUG',
             '--verbose',
         ]
-    
+
+    os.environ['MONGO_POPULATOR_CONFIG'] = os.path.join(
+        os.path.dirname(__file__), 'mongo-populator.cfg'
+    )
+
     nose.run_exit(
         argv=argv,
-        defaultTest=abspath(dirname(__file__))
+        defaultTest=os.path.abspath(os.path.dirname(__file__))
     )
+
+    del os.environ['MONGO_POPULATOR_CONFIG']
 
 
 if __name__ == '__main__':
