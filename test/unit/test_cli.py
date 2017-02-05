@@ -19,7 +19,7 @@
 
 ########################################################
 
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 from populator.cli import CLI
 
@@ -52,7 +52,7 @@ class TestCLI(CLITestCase):
         self.assertEqual(c.options['source_use_local_db'], True)
         
     def test_local_source_ssh_destination(self):
-        with patch('paramiko.client.SSHClient.connect', new_callable=Mock) as mock_ssh, \
+        with patch('paramiko.client.SSHClient.connect') as mock_ssh, \
                 patch('populator.source.local.LocalDbSource.get_dump_dir') as mock_dump_dir, \
                 patch('populator.destination.ssh.SSHDestination._populate') as mock_populate:
             mock_dump_dir.return_value = 'dir_a', 'dir_b'

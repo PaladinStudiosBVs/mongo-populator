@@ -17,7 +17,12 @@ Mongo Populator is supposed to work with Python 3.3+. If you want your version o
 supported, feel free to contribute to the project.
  
 ## Usage
-Here are are the current supported use cases. I will be showing how to do it with command-line options and with
+ . **Supported sources**: local directory, local database (dockerized or not), remote database via SSH (dockerized or 
+    not), Amazon S3 bucket.
+ . **Supported destinations**: local database (dockerized or not), remote database via SSH (dockerized or not),
+    Amazon S3 bucket.
+    
+Here are some examples of the supported use cases. I will be showing how to do it with command-line options and with
 configuration file properties. I assume you will then be able to do the same with environment variables.
 
 ### From a dump in a local directory to a local Mongo database.
