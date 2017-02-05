@@ -7,6 +7,8 @@ You can either use a local dump, a dump from another Mongo database or a dump lo
  - **Supported destinations**: local database (dockerized or not), remote database via SSH (dockerized or not),
     Amazon S3 bucket.
 
+**Disclaimer**: this is still under heavy development, so use it at your own risk!
+
 ## Installation
 In order to install Mongo Populator, follow these steps:
  1. `git clone https://github.com/PaladinStudiosBVs/mongo-populator.git`
