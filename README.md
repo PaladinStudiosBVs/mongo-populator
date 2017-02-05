@@ -513,6 +513,7 @@ diff_lines = cyan
 ## TODO
  - Add the ability to specify a configuration file as a command-line argument. Something like `$ mongo-populator /path/to/file.cfg`
  - Allow custom temporary directory in remote hosts. Right now, by default it stores dumps inside `/tmp/mongodumps/`
+ - Add proper logging (useful if I'm running mongo-populator as a cron job)
  
 ## License
 Click on the [Link](https://github.com/PaladinStudiosBVs/mongo-populator/blob/master/COPYING) to see the full text.

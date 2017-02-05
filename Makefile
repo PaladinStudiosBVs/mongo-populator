@@ -1,15 +1,4 @@
-# gmake syntax
-########################################################
-# Makefile for Mongo Populator
-#
-# useful targets:
-#   make tests ---------------- run the tests
-#   make pyflakes, make pep8 -- source code checks
-#   make install -------------- installs awesome mongo-populator
-
 PYTHON=python3
-
-########################################################
 
 tests:
 	$(PYTHON) setup.py test --verbose
