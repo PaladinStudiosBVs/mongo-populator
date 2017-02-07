@@ -14,7 +14,7 @@ pyflakes:
 
 install:
 	@mkdir -p /etc/mongo-populator
-	@cp examples/mongo-populator.cfg /etc/mongo-populator
+	@cp examples/mongo-populator.cfg /etc/mongo-populator/
 	$(PYTHON) -m pip install -r requirements.txt
 	$(PYTHON) setup.py install
 
