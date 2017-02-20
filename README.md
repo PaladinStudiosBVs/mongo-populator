@@ -72,7 +72,7 @@ mongo-populator   --source-use-local-dump \
                   --destination-ssh-host <host> \
                   --destination-ssh-user <user> \
                   [--destintion-ssh-password <password> \]
-                  [--destination-ssh-identity-file <file>]
+                  [--destination-ssh-key-file <file>]
 ```
 
 #### Properties in configuration file
@@ -512,11 +512,11 @@ diff_remove = red
 diff_lines = cyan
 ```
 
-## TODO
+# TODO
  - Add the ability to specify a configuration file as a command-line argument. Something like `$ mongo-populator /path/to/file.cfg`
  - Allow custom temporary directory in remote hosts. Right now, by default it stores dumps inside `/tmp/mongodumps/`
  - Add proper logging (useful if I'm running mongo-populator as a cron job)
  - Improve tests :}
  
-## License
+# License
 Click on the [Link](https://github.com/PaladinStudiosBVs/mongo-populator/blob/master/COPYING) to see the full text.
