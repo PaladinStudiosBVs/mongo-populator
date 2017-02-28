@@ -65,6 +65,6 @@ def to_text(obj, encoding='utf-8', errors=None, nonstring='simplerepr'):
     elif nonstring == 'strict':
         raise TypeError('obj must be a string type')
     else:
-        raise TypeError(f'Invalid value {nonstring} for to_text\'s nonstring parameter')
+        raise TypeError('Invalid value {} for to_text\'s nonstring parameter'.format(nonstring))
 
     return to_text(value, encoding, errors)
