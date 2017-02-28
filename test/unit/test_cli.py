@@ -42,6 +42,34 @@ class TestCLI(CLITestCase):
         self.assertEqual(c.options['source_db_password'], 'test_password_1')
         self.assertEqual(c.options['source_use_local_db'], True)
         
+    def test_exclude_collections_empty(self):
+        c = CLI([
+            'script_name'
+        ])
+        c.parse()
+        
+        self.assertIsNone(c.options['source_collections_to_exclude'])
+        
+    def test_exclude_collections_one_element(self):
+        c = CLI([
+            'script_name',
+            '--source-exclude-collection', 'abc'
+        ])
+        c.parse()
+        
+        self.assertListEqual(['abc'], c.options['source_collections_to_exclude'])
+        
+    def test_exclude_collections_several_elements(self):
+        c = CLI([
+            'script_name',
+            '--source-exclude-collection', 'abc',
+            '--source-exclude-collection', 'def',
+            '--source-exclude-collection', 'ghi'
+        ])
+        c.parse()
+    
+        self.assertListEqual(['abc', 'def', 'ghi'], c.options['source_collections_to_exclude'])
+        
     def test_cli_cwd_config_file(self):
         c = CLI([])
         c.parse()

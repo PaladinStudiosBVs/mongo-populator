@@ -144,7 +144,7 @@ def load_config_file():
             try:
                 parser.read(path)
             except configparser.Error as e:
-                raise MongoPopulatorOptionsError(f"Error reading config file: \n{e}")
+                raise MongoPopulatorOptionsError('Error reading config file: \n{}'.format(e))
             return parser, path
 
     return None, ''

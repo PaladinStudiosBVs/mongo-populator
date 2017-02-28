@@ -76,6 +76,8 @@ class CLI(object):
         source_group.add_argument('--source-use-local-db', dest='source_use_local_db',
                                   default=C.SOURCE_USE_LOCAL_DB, action='store_true',
                                   help='Indicates if you want to use a local database or not')
+        source_group.add_argument('--source-exclude-collection', dest='source_collections_to_exclude',
+                                  default=None, action='append', help='Collections you want to exclude in the dump')
         # Source local dump
         source_group.add_argument('--source-use-local-dump', dest='source_use_local_dump',
                                   default=C.SOURCE_USE_LOCAL_DUMP, action='store_true',
@@ -212,7 +214,7 @@ class CLI(object):
         :return:
         """
         if C.CONFIG_FILE:
-            info('Using %s as configuration file' % C.CONFIG_FILE, color='blue')
+            info('Found configuration file {}'.format(C.CONFIG_FILE), color='blue')
         else:
             info('No configuration file found. Using default values.', color='yellow')
             
@@ -228,6 +230,7 @@ class CLI(object):
                 **self._build_kwargs(
                     [
                         'source_db',
+                        'source_collections_to_exclude',
                         'source_tmp',
                         'source_is_dockerized',
                         'source_docker'
@@ -243,6 +246,7 @@ class CLI(object):
                 **self._build_kwargs(
                     [
                         'source_db',
+                        'source_collections_to_exclude',
                         'source_ssh',
                         'source_tmp',
                         'source_is_dockerized',
