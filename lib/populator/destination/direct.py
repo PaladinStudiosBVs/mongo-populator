@@ -25,19 +25,21 @@ from subprocess import CalledProcessError
 from populator.destination import MongoDestination
 
 
-class LocalDestination(MongoDestination):
-    def __init__(self, db_name=None, db_user=None, db_password=None, drop_db=True,
-                 db_restore_indexes=False, source=None):
+class DirectDestination(MongoDestination):
+    def __init__(self, db_name=None, host=None, db_user=None, db_password=None,
+                 drop_db=True, use_ssl=False, db_restore_indexes=False, source=None):
         MongoDestination.__init__(
             self,
             source=source,
             db_name=db_name,
+            host=host,
             db_user=db_user,
             db_password=db_password,
             drop_db=drop_db,
+            use_ssl=use_ssl,
             db_restore_indexes=db_restore_indexes
         )
-        
+
     def _populate(self):
         try:
             subprocess.run(

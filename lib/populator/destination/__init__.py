@@ -25,7 +25,8 @@ from populator import MongoConfig, PopulatorCtxManager
 
 
 class MongoDestination(MongoConfig, PopulatorCtxManager, metaclass=ABCMeta):
-    def __init__(self, source, db_name=None, db_user=None, db_password=None, drop_db=True, db_restore_indexes=False):
+    def __init__(self, source, db_name=None, host=None, db_user=None, db_password=None,
+                 use_ssl=False, drop_db=True, db_restore_indexes=False):
         """
         :type source: populator.source.MongoSource
         :param source:
@@ -33,19 +34,21 @@ class MongoDestination(MongoConfig, PopulatorCtxManager, metaclass=ABCMeta):
         MongoConfig.__init__(
             self,
             db_name=db_name,
+            host=host,
             db_user=db_user,
             db_password=db_password,
+            use_ssl=use_ssl,
             drop_db=drop_db,
             db_restore_indexes=db_restore_indexes
         )
         self.source = source
         self.dump_dir = None
         self.prefix = None
-        
+
     @abstractmethod
     def _populate(self):
         pass
-    
+
     def run(self):
         self.dump_dir, self.prefix = self.source.get_dump_dir()
         self._populate()

@@ -22,7 +22,7 @@
 import argparse
 
 from populator import constants as C
-from populator.destination.local import LocalDestination
+from populator.destination.direct import DirectDestination
 from populator.destination.s3 import AmazonS3Destination
 from populator.destination.ssh import SSHDestination
 from populator.errors import (
@@ -41,7 +41,7 @@ class CLI(object):
     def __init__(self, args):
         self.options = None
         self.args = args
-    
+
     def parse(self):
         """
         :rtype : argparse.ArgumentParser
@@ -60,7 +60,7 @@ class CLI(object):
         )
         parser.add_argument('-v', '--verbose', dest='verbosity', default=0, action='count',
                             help='verbose mode (-vvv for more)')
-        
+
         # Source
         source_group = parser.add_argument_group('Source')
         # Source DB configurations
@@ -72,7 +72,7 @@ class CLI(object):
         source_group.add_argument('--source-db-password', dest='source_db_password',
                                   default=C.SOURCE_DB_PASSWORD, action='store',
                                   help='Password to connect to source database')
-        
+
         source_group.add_argument('--source-use-local-db', dest='source_use_local_db',
                                   default=C.SOURCE_USE_LOCAL_DB, action='store_true',
                                   help='Indicates if you want to use a local database or not')
@@ -129,12 +129,15 @@ class CLI(object):
         source_group.add_argument('--source-s3-prefix', dest='source_s3_prefix',
                                   default=C.SOURCE_S3_PREFIX, action='store',
                                   help='Prefix to be use when fetching objects from the S3 bucket')
-        
+
         # Destination
         destination_group = parser.add_argument_group('Destination')
         destination_group.add_argument('--destination-db-name', dest='destination_db_name',
                                        default=C.DESTINATION_DB_NAME, action='store',
-                                       help='Name of the local destination Database')
+                                       help='Name of the destination Database')
+        destination_group.add_argument('--destination-direct-host', dest='destination_direct_host',
+                                       default=C.DESTINATION_DIRECT_HOST, action='store',
+                                       help='Host or connection string for the destination DB')
         destination_group.add_argument('--destination-db-user', dest='destination_db_user',
                                        default=C.DESTINATION_DB_USER,
                                        action='store', help='User to connect to destination database')
@@ -144,14 +147,18 @@ class CLI(object):
         destination_group.add_argument('--destination-db-restore-indexes', dest='destination_db_restore_indexes',
                                        default=C.DESTINATION_DB_RESTORE_INDEXES, action='store_true',
                                        help='Indicates whether you want to restore indexes from the dump or not')
+        destination_group.add_argument('--destination-direct-use-ssl', dest='destination_direct_use_ssl',
+                                       default=C.DESTINATION_DIRECT_USE_SSL, action='store_true',
+                                       help='Indicates whether you want to use SSL to connect to the DB or not')
         destination_group.add_argument('--destination-drop-db', dest='destination_drop_db',
                                        default=C.DESTINATION_DROP_DB, action='store_true',
                                        help='Indicates whether you want to drop the destination database')
-        
-        destination_group.add_argument('--destination-use-local-db', dest='destination_use_local_db',
-                                       default=C.DESTINATION_USE_LOCAL_DB, action='store_true',
-                                       help='Indicates whether you want to restore a local database.')
-        
+
+        destination_group.add_argument('--destination-use-direct',
+                                       dest='destination_use_direct',
+                                       default=C.DESTINATION_USE_DIRECT, action='store_true',
+                                       help='Indicates whether you want to use direct access to a MongoDB.')
+
         destination_group.add_argument('--destination-use-ssh', dest='destination_use_ssh',
                                        default=C.DESTINATION_USE_SSH, action='store_true',
                                        help='Indicates if you want to connect via SSH to destination database.')
@@ -188,7 +195,7 @@ class CLI(object):
 
         self.options = vars(parser.parse_args(self.args[1:]))
         # Any aditional transformations needed should go here
-        
+
     def _build_kwargs(self, prefixes, replacement):
         """
         :type prefixes: list[str]
@@ -200,13 +207,13 @@ class CLI(object):
         """
         d = {k.replace(replacement, ''): v for k, v in
              list(filter(lambda x: any(map(lambda y: str.startswith(x[0], y), prefixes)), list(self.options.items())))}
-        
+
         return d
-    
+
     def check_containerization(self):
         if self.options['source_is_dockerized'] and not self.options['source_docker_container_name']:
             raise MongoPopulatorNoDockerContainerNameError()
-    
+
     def run(self):
         """
         This is where the main action happens. After having parsed the cli arguments,
@@ -217,15 +224,15 @@ class CLI(object):
             info('Found configuration file {}'.format(C.CONFIG_FILE), color='blue')
         else:
             info('No configuration file found. Using default values.', color='yellow')
-            
+
         # Now that we have enough info, let's see which objects do we build
         # for the source dump. Order is local dump > local db > ssh > s3
         if self.options['source_use_local_dump']:
             source = LocalDumpSource(self.options['source_dump_dir'])
-            
+
         elif self.options['source_use_local_db']:
             self.check_containerization()
-            
+
             source = LocalDbSource(
                 **self._build_kwargs(
                     [
@@ -238,10 +245,10 @@ class CLI(object):
                     'source_'
                 )
             )
-            
+
         elif self.options['source_use_ssh']:
             self.check_containerization()
-            
+
             source = SSHSource(
                 **self._build_kwargs(
                     [
@@ -255,30 +262,30 @@ class CLI(object):
                     'source_'
                 )
             )
-            
+
         elif self.options['source_use_s3']:
             if not self.options['source_s3_bucket']:
                 raise MongoPopulatorNoS3BucketError()
-            
+
             source = AmazonS3Source(
                 **self._build_kwargs(
                     ['source_db', 'source_s3', 'source_tmp'],
                     'source_'
                 )
             )
-            
+
         else:
             raise MongoPopulatorNoSourceError()
-            
+
         # Now let's check the destination. The order is local dump > local db > ssh > s3
-        if self.options['destination_use_local_db']:
+        if self.options['destination_use_direct']:
             opts = self._build_kwargs(
-                ['destination_db', 'destination_drop_db'],
+                ['destination_db', 'destination_drop_db', 'destination_direct'],
                 'destination_'
             )
             opts['source'] = source
-            destination = LocalDestination(**opts)
-            
+            destination = DirectDestination(**opts)
+
         elif self.options['destination_use_ssh']:
             opts = self._build_kwargs(
                 ['destination_db', 'destination_ssh', 'destination_drop_db'],
@@ -286,18 +293,18 @@ class CLI(object):
             )
             opts['source'] = source
             destination = SSHDestination(**opts)
-            
+
         elif self.options['destination_use_s3']:
             if not self.options['destination_s3_bucket']:
                 raise MongoPopulatorNoS3BucketError()
-            
+
             opts = self._build_kwargs(
                 ['destination_s3', 'destination_db'], 'destination_'
             )
             opts['source'] = source
             destination = AmazonS3Destination(**opts)
-            
+
         else:
             raise MongoPopulatorNoDestinationError()
-            
+
         return destination.run()

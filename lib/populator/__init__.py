@@ -30,23 +30,32 @@ from populator.utils.mongo import check_for_mongo_tools
 
 
 class MongoConfig(object):
-    def __init__(self, db_name, db_user=None, db_password=None, db_restore_indexes=False, drop_db=True):
+    def __init__(self, db_name, host=None, db_user=None, db_password=None,
+                 use_ssl=False, db_restore_indexes=False, drop_db=True):
         """
         :type db_name: str
         :param db_name:
+        :type host: str
+        :param host:
         :type db_user: str
         :param db_user:
         :type db_password: str
         :param db_password:
+        :type use_ssl: bool
+        :param use_ssl:
+        :type db_restore_indexes: bool
+        :param db_restore_indexes:
         :type drop_db: bool
         :param drop_db:
         """
         self.db_name = db_name
+        self.host = host
         self.db_user = db_user
         self.db_password = db_password
         self.db_restore_indexes = db_restore_indexes
+        self.use_ssl = use_ssl
         self.drop_db = drop_db
-        
+
     def _get_cmd_str(self, cmd):
         """
         :param cmd:
@@ -55,24 +64,26 @@ class MongoConfig(object):
         user = '-u {}'.format(self.db_user) if self.db_user else ''
         password = '-p {}'.format(self.db_password) if self.db_password else ''
         db = '--db {}'.format(self.db_name)
-        
+        ssl = '--ssl' if self.use_ssl else ''
+        host = '--host {}'.format(self.host) if self.host else ''
+
         if cmd == 'dump':
             return 'mongodump {} {} --out %s {}'.format(user, password, db)
-        
+
         elif cmd == 'restore':
             drop_db = '--drop' if self.drop_db else ''
             restore_indexes = '--noIndexRestore' if not self.db_restore_indexes else ''
-            
-            return 'mongorestore {} {} {} {} {} %s'.format(
-                restore_indexes, user, password, drop_db, db
+
+            return 'mongorestore {} {} {} {} {} {} %s'.format(
+                ssl, restore_indexes, user, password, drop_db, db
             )
-        
+
         else:
             raise MongoPopulatorUnknownCmdError()
-        
+
     def get_dump_str(self):
         return self._get_cmd_str('dump')
-    
+
     def get_restore_str(self):
         return self._get_cmd_str('restore')
 
@@ -84,16 +95,16 @@ class PopulatorCtxManager(object):
         you enter the context.
         """
         pass
-    
+
     def __enter__(self):
         check_for_mongo_tools()
         info("Performing extra pre-population tasks...", color='blue')
         self.__enter_extra_init()
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
-    
+
 
 class SSHPopulator(object):
     """
@@ -119,17 +130,17 @@ class SSHPopulator(object):
             'password': ssh_password,
             'key_filename': ssh_key_file
         })
-            
+
         self.scp_client = SCPClient(self.ssh_client.get_transport(), socket_timeout=10.0)
-        
+
     def __enter_extra_init(self):
         pass
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.scp_client.close()
         self.ssh_client.close()
-        
-        
+
+
 class AmazonS3Populator(object):
     """ todo """
     def __init__(self, bucket, s3_prefix=None, aws_access_key_id=None, aws_secret_access_key=None,
