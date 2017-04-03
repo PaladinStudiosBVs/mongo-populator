@@ -135,8 +135,8 @@ class CLI(object):
         destination_group.add_argument('--destination-db-name', dest='destination_db_name',
                                        default=C.DESTINATION_DB_NAME, action='store',
                                        help='Name of the destination Database')
-        destination_group.add_argument('--destination-direct-host', dest='destination_direct_host',
-                                       default=C.DESTINATION_DIRECT_HOST, action='store',
+        destination_group.add_argument('--destination-db-host', dest='destination_db_host',
+                                       default=C.DESTINATION_DB_HOST, action='store',
                                        help='Host or connection string for the destination DB')
         destination_group.add_argument('--destination-db-user', dest='destination_db_user',
                                        default=C.DESTINATION_DB_USER,
@@ -144,6 +144,9 @@ class CLI(object):
         destination_group.add_argument('--destination-db-password', dest='destination_db_password',
                                        default=C.DESTINATION_DB_PASSWORD, action='store',
                                        help='Password to connect to destination database')
+        destination_group.add_argument('--destination-db-auth', dest='destination_db_auth',
+                                       default=C.DESTINATION_DB_AUTH, action='store',
+                                       help='Database that stores authentication credentials')
         destination_group.add_argument('--destination-db-restore-indexes', dest='destination_db_restore_indexes',
                                        default=C.DESTINATION_DB_RESTORE_INDEXES, action='store_true',
                                        help='Indicates whether you want to restore indexes from the dump or not')

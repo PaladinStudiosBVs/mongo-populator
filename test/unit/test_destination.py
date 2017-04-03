@@ -25,15 +25,16 @@ class TestDestination(unittest.TestCase):
     def test_direct_destination(self):
         dd = DirectDestination(
             db_name='test_db',
-            host='localhost:27017',
+            db_host='localhost:27017',
             db_user='test_user',
             db_password='test_password',
+            db_auth='admin',
             drop_db=True,
-            use_ssl=True,
+            direct_use_ssl=True,
             db_restore_indexes=None
         )
 
         self.assertEqual(
             dd.get_restore_str(),
-            'mongorestore --ssl --noIndexRestore -u test_user -p test_password --drop --db test_db %s'
+            'mongorestore -u test_user -p test_password --db test_db --ssl -h localhost:27017 --authenticationDatabase admin --noIndexRestore --drop %s'
         )

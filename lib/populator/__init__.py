@@ -31,7 +31,8 @@ from populator.utils.mongo import check_for_mongo_tools
 
 class MongoConfig(object):
     def __init__(self, db_name, host=None, db_user=None, db_password=None,
-                 use_ssl=False, db_restore_indexes=False, drop_db=True):
+                 use_ssl=False, db_restore_indexes=False, drop_db=True,
+                 auth_db=None):
         """
         :type db_name: str
         :param db_name:
@@ -47,6 +48,8 @@ class MongoConfig(object):
         :param db_restore_indexes:
         :type drop_db: bool
         :param drop_db:
+        :type auth_db: str
+        :param auth_db:
         """
         self.db_name = db_name
         self.host = host
@@ -55,27 +58,35 @@ class MongoConfig(object):
         self.db_restore_indexes = db_restore_indexes
         self.use_ssl = use_ssl
         self.drop_db = drop_db
+        self.auth_db = auth_db
 
     def _get_cmd_str(self, cmd):
         """
         :param cmd:
         :return:
         """
-        user = '-u {}'.format(self.db_user) if self.db_user else ''
-        password = '-p {}'.format(self.db_password) if self.db_password else ''
-        db = '--db {}'.format(self.db_name)
-        ssl = '--ssl' if self.use_ssl else ''
-        host = '--host {}'.format(self.host) if self.host else ''
+        common_opts = ''
+        if self.db_user:
+            common_opts += '-u {} '.format(self.db_user)
+        if self.db_password:
+            common_opts += '-p {} '.format(self.db_password)
+        common_opts += '--db {} '.format(self.db_name)
+        if self.use_ssl:
+            common_opts += '--ssl '
+        if self.host:
+            common_opts += '-h {} '.format(self.host)
+        if self.auth_db:
+            common_opts += '--authenticationDatabase {}'.format(self.auth_db)
 
         if cmd == 'dump':
-            return 'mongodump {} {} --out %s {}'.format(user, password, db)
+            return 'mongodump {} --out %s'.format(common_opts)
 
         elif cmd == 'restore':
             drop_db = '--drop' if self.drop_db else ''
             restore_indexes = '--noIndexRestore' if not self.db_restore_indexes else ''
 
-            return 'mongorestore {} {} {} {} {} {} %s'.format(
-                ssl, restore_indexes, user, password, drop_db, db
+            return 'mongorestore {} {} {} %s'.format(
+                common_opts, restore_indexes, drop_db
             )
 
         else:

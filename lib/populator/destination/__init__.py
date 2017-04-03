@@ -26,7 +26,7 @@ from populator import MongoConfig, PopulatorCtxManager
 
 class MongoDestination(MongoConfig, PopulatorCtxManager, metaclass=ABCMeta):
     def __init__(self, source, db_name=None, host=None, db_user=None, db_password=None,
-                 use_ssl=False, drop_db=True, db_restore_indexes=False):
+                 use_ssl=False, drop_db=True, db_restore_indexes=False, auth_db=None):
         """
         :type source: populator.source.MongoSource
         :param source:
@@ -37,6 +37,7 @@ class MongoDestination(MongoConfig, PopulatorCtxManager, metaclass=ABCMeta):
             host=host,
             db_user=db_user,
             db_password=db_password,
+            auth_db=auth_db,
             use_ssl=use_ssl,
             drop_db=drop_db,
             db_restore_indexes=db_restore_indexes
