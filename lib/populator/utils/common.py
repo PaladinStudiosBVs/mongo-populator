@@ -42,7 +42,7 @@ def info(msg, color=None, stderr=False, screen_only=False, log_only=False):
     nocolor = msg
     if color:
         msg = stringc(msg, color)
-        
+
     if not log_only:
         if not msg.endswith('\n'):
             msg2 = msg + '\n'
@@ -56,7 +56,7 @@ def info(msg, color=None, stderr=False, screen_only=False, log_only=False):
             fileobj = sys.stderr
 
         fileobj.write(msg2)
-        
+
         try:
             fileobj.flush()
         except IOError as e:
@@ -64,7 +64,7 @@ def info(msg, color=None, stderr=False, screen_only=False, log_only=False):
             # when piping to "head -n1"
             if e.errno != errno.EPIPE:
                 raise
-            
+
     if logger and not screen_only:
         msg2 = nocolor.lstrip('\n')
         msg2 = to_text(msg2)
@@ -73,7 +73,7 @@ def info(msg, color=None, stderr=False, screen_only=False, log_only=False):
             logger.error(msg2)
         else:
             logger.info(msg2)
-            
+
 
 def die(msg):
     info(msg, color='red')

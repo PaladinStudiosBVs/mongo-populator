@@ -31,12 +31,12 @@ class MongoSource(MongoConfig, PopulatorCtxManager, metaclass=ABCMeta):
             self,
             db_name=db_name,
             db_user=db_user,
-            db_password=db_password,
+            db_password=db_password
         )
         self.tmp_dir = tmp_dir
         self.is_dockerized = is_dockerized
         self.container_name = docker_container_name
-        
+
     @abstractmethod
     def get_dump_dir(self):
         """
