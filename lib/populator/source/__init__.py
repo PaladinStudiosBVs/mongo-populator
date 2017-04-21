@@ -25,13 +25,19 @@ from populator import MongoConfig, PopulatorCtxManager
 
 
 class MongoSource(MongoConfig, PopulatorCtxManager, metaclass=ABCMeta):
-    def __init__(self, db_name=None, db_user=None, db_password=None, tmp_dir=None, is_dockerized=False,
-                 docker_container_name=None):
+    def __init__(self, db_name=None, db_user=None, host=None, db_password=None,
+                 use_ssl=False, auth_db=None, exclude=None, collection=None,
+                 tmp_dir=None, is_dockerized=False, docker_container_name=None):
         MongoConfig.__init__(
             self,
             db_name=db_name,
+            host=host,
             db_user=db_user,
-            db_password=db_password
+            db_password=db_password,
+            auth_db=auth_db,
+            use_ssl=use_ssl,
+            exclude=exclude,
+            collection=collection
         )
         self.tmp_dir = tmp_dir
         self.is_dockerized = is_dockerized

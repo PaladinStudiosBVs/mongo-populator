@@ -34,7 +34,7 @@ from populator.utils.common import info
 class SSHDestination(SSHPopulator, MongoDestination):
     def __init__(self, db_name=None, db_user=None, db_password=None, drop_db=True, db_restore_indexes=False,
                  ssh_host=None, ssh_user=None, ssh_password=None, ssh_key_file=None, source=None,
-                 db_auth=None, db_host=None):
+                 db_auth=None, db_host=None, scp_client=None, ssh_client=None):
         MongoDestination.__init__(
             self,
             db_name=db_name,
@@ -46,13 +46,18 @@ class SSHDestination(SSHPopulator, MongoDestination):
             db_restore_indexes=db_restore_indexes,
             source=source
         )
-        SSHPopulator.__init__(
-            self,
-            ssh_host=ssh_host,
-            ssh_user=ssh_user,
-            ssh_password=ssh_password,
-            ssh_key_file=ssh_key_file
-        )
+
+        if not scp_client or not ssh_client:
+            SSHPopulator.__init__(
+                self,
+                ssh_host=ssh_host,
+                ssh_user=ssh_user,
+                ssh_password=ssh_password,
+                ssh_key_file=ssh_key_file
+            )
+        else:
+            self.scp_client = scp_client
+            self.ssh_client = ssh_client
 
     def _populate(self):
         # We now have a directory with the database dump, so we must first

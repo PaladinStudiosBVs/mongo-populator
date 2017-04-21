@@ -27,8 +27,8 @@ from populator.utils.common import info
 
 
 class AmazonS3Source(MongoSource, AmazonS3Populator):
-    def __init__(self, s3_bucket, s3_prefix=None, s3_access_key_id=None, s3_secret_access_key=None,
-                 s3_region_name=None, tmp_dir=None, **kwargs):
+    def __init__(self, s3_bucket=None, s3_prefix=None, s3_access_key_id=None, s3_secret_access_key=None,
+                 s3_region_name=None, tmp_dir=None, bucket_obj=None):
         """
         todo
         :param s3_bucket:
@@ -38,16 +38,23 @@ class AmazonS3Source(MongoSource, AmazonS3Populator):
         :param s3_region_name:
         :param tmp_dir:
         """
+        if not s3_bucket and not bucket_obj:
+            raise Exception('I need a bucket!')
+
         MongoSource.__init__(self, tmp_dir=tmp_dir)
-        AmazonS3Populator.__init__(
-            self,
-            s3_bucket,
-            s3_prefix=s3_prefix,
-            aws_access_key_id=s3_access_key_id,
-            aws_secret_access_key=s3_secret_access_key,
-            region_name=s3_region_name
-        )
-    
+        if not bucket_obj:
+            AmazonS3Populator.__init__(
+                self,
+                s3_bucket,
+                s3_prefix=s3_prefix,
+                aws_access_key_id=s3_access_key_id,
+                aws_secret_access_key=s3_secret_access_key,
+                region_name=s3_region_name
+            )
+        else:
+            self.bucket = bucket_obj
+            self.s3_prefix = s3_prefix
+
     def get_dump_dir(self):
         # We create the local tmp dir
         tmpdir = os.path.join(self.tmp_dir, self.s3_prefix)
@@ -56,7 +63,7 @@ class AmazonS3Source(MongoSource, AmazonS3Populator):
             color='green'
         )
         os.makedirs(tmpdir)
-        
+
         # Now we iterate over all objects in the S3 bucket and
         # copy to the tmp dir all the objects that have a certain
         # prefix. The prefix is a way of indicating a directory tree
@@ -72,5 +79,5 @@ class AmazonS3Source(MongoSource, AmazonS3Populator):
                     obj.key,
                     os.path.join(tmpdir, obj.key.split('/')[-1])
                 )
-                
+
         return tmpdir, self.s3_prefix

@@ -32,7 +32,7 @@ from populator.utils.mongo import check_for_mongo_tools
 class MongoConfig(object):
     def __init__(self, db_name, host=None, db_user=None, db_password=None,
                  use_ssl=False, db_restore_indexes=False, drop_db=True,
-                 auth_db=None):
+                 auth_db=None, exclude=None, collection=None):
         """
         :type db_name: str
         :param db_name:
@@ -50,6 +50,10 @@ class MongoConfig(object):
         :param drop_db:
         :type auth_db: str
         :param auth_db:
+        :type exclude: list
+        :param exclude:
+        :type collection: str
+        :param collection:
         """
         self.db_name = db_name
         self.host = host
@@ -59,6 +63,8 @@ class MongoConfig(object):
         self.use_ssl = use_ssl
         self.drop_db = drop_db
         self.auth_db = auth_db
+        self.exclude = exclude or []
+        self.collection = collection
 
     def _get_cmd_str(self, cmd):
         """
@@ -76,16 +82,23 @@ class MongoConfig(object):
         if self.host:
             common_opts += '-h {} '.format(self.host)
         if self.auth_db:
-            common_opts += '--authenticationDatabase {}'.format(self.auth_db)
+            common_opts += '--authenticationDatabase {} '.format(self.auth_db)
 
         if cmd == 'dump':
-            return 'mongodump {} --out %s'.format(common_opts)
+            if self.collection:
+                extra = '--collection %s ' % self.collection
+            elif self.exclude:
+                extra = '--excludeCollection ' + ' --excludeCollection '.join(self.exclude) + ' '
+            else:
+                extra = ''
+
+            return 'mongodump {}{}--out %s'.format(common_opts, extra)
 
         elif cmd == 'restore':
-            drop_db = '--drop' if self.drop_db else ''
+            drop_db = ' --drop' if self.drop_db else ''
             restore_indexes = '--noIndexRestore' if not self.db_restore_indexes else ''
 
-            return 'mongorestore {} {} {} %s'.format(
+            return 'mongorestore {}{}{} %s'.format(
                 common_opts, restore_indexes, drop_db
             )
 
