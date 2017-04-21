@@ -29,9 +29,10 @@ from populator.utils.docker import get_dump_from_container
 
 
 class SSHSource(SSHPopulator, MongoSource):
-    def __init__(self, db_name=None, db_user=None, db_password=None, ssh_host=None, ssh_user=None,
-                 ssh_password=None, ssh_key_file=None, tmp_dir=None, is_dockerized=False,
-                 docker_container_name=None, ssh_client=None, scp_client=None):
+    def __init__(self, db_name=None, db_host=None, db_user=None, db_password=None, db_auth=None,
+                 direct_use_ssl=False, ssh_host=None, ssh_user=None, ssh_password=None, ssh_key_file=None,
+                 tmp_dir=None, is_dockerized=False, docker_container_name=None, exclude=None, collection=None,
+                 ssh_client=None, scp_client=None):
         """
         :type db_name: str
         :param db_name:
@@ -49,9 +50,14 @@ class SSHSource(SSHPopulator, MongoSource):
         MongoSource.__init__(
             self,
             db_name=db_name,
+            host=db_host,
             db_user=db_user,
             db_password=db_password,
+            auth_db=db_auth,
+            use_ssl=direct_use_ssl,
             tmp_dir=tmp_dir,
+            exclude=exclude,
+            collection=collection,
             is_dockerized=is_dockerized,
             docker_container_name=docker_container_name
         )
