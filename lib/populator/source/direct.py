@@ -37,17 +37,20 @@ class LocalDumpSource(object):
         return self.source_dump_dir, None
 
 
-class LocalDbSource(MongoSource):
-    def __init__(self, db_name=None, db_user=None, db_password=None, tmp_dir=None,
-                 is_dockerized=False, docker_container_name=None, **kwargs):
-        MongoConfig.__init__(
-            self,
-            db_name=db_name,
-            db_user=db_user,
-            db_password=db_password,
-        )
+class DirectSource(MongoSource):
+    def __init__(self, db_name=None, db_host=None, db_user=None, db_password=None,
+                 tmp_dir=None, direct_use_ssl=False, is_dockerized=False, docker_container_name=None,
+                 db_auth=None, exclude=None, collection=None):
         MongoSource.__init__(
             self,
+            db_name=db_name,
+            host=db_host,
+            db_user=db_user,
+            db_password=db_password,
+            auth_db=db_auth,
+            use_ssl=direct_use_ssl,
+            exclude=exclude,
+            collection=collection,
             tmp_dir=tmp_dir,
             is_dockerized=is_dockerized,
             docker_container_name=docker_container_name

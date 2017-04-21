@@ -18,3 +18,10 @@ install:
 	$(PYTHON) -m pip install -r requirements.txt
 	$(PYTHON) setup.py install
 
+clean:
+	@rm -Rf lib/mongo_populator.egg-info
+	@rm -Rf __pycache__
+	@rm -Rf dist
+	@rm -Rf build
+	@rm -Rf .eggs
+

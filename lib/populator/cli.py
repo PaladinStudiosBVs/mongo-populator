@@ -31,7 +31,7 @@ from populator.errors import (
     MongoPopulatorNoS3BucketError,
     MongoPopulatorNoSourceError
 )
-from populator.source.local import LocalDbSource, LocalDumpSource
+from populator.source.direct import DirectSource, LocalDumpSource
 from populator.source.s3 import AmazonS3Source
 from populator.source.ssh import SSHSource
 from populator.utils.common import info
@@ -67,17 +67,30 @@ class CLI(object):
         source_group.add_argument('--source-db-name', dest='source_db_name',
                                   default=C.SOURCE_DB_NAME, action='store',
                                   help='Name of the local source Database')
+        source_group.add_argument('--source-db-host', dest='source_db_host',
+                                  default=C.SOURCE_DB_HOST, action='store',
+                                  help='Host or connection string for the source DB')
         source_group.add_argument('--source-db-user', dest='source_db_user', default=C.SOURCE_DB_USER,
                                   action='store', help='User to connect to source database')
         source_group.add_argument('--source-db-password', dest='source_db_password',
                                   default=C.SOURCE_DB_PASSWORD, action='store',
                                   help='Password to connect to source database')
+        source_group.add_argument('--source-db-auth', dest='source_db_auth',
+                                  default=C.SOURCE_DB_AUTH, action='store',
+                                  help='Database that stores authentication credentials')
 
-        source_group.add_argument('--source-use-local-db', dest='source_use_local_db',
-                                  default=C.SOURCE_USE_LOCAL_DB, action='store_true',
-                                  help='Indicates if you want to use a local database or not')
-        source_group.add_argument('--source-exclude-collection', dest='source_collections_to_exclude',
-                                  default=None, action='append', help='Collections you want to exclude in the dump')
+        source_group.add_argument('--source-use-direct', dest='source_use_direct',
+                                  default=C.SOURCE_USE_DIRECT, action='store_true',
+                                  help='Indicates whether you want to directly connect to a Mongo source or not.')
+        source_group.add_argument('--source-direct-use-ssl', dest='source_direct_use_ssl',
+                                  default=C.SOURCE_DIRECT_USE_SSL, action='store_true',
+                                  help='Indicates whether you want to use SSL to connect to the DB or not')
+        source_group.add_argument('--source-exclude-collection', dest='source_exclude',
+                                  default=C.SOURCE_EXCLUDE, action='append',
+                                  help='Collections you want to exclude in the dump')
+        source_group.add_argument('--source-collection', dest='source_collection',
+                                  default=C.SOURCE_COLLECTION, action='store',
+                                  help='Collection to dump/export. Overrides collections to excluse.')
         # Source local dump
         source_group.add_argument('--source-use-local-dump', dest='source_use_local_dump',
                                   default=C.SOURCE_USE_LOCAL_DUMP, action='store_true',
@@ -233,14 +246,15 @@ class CLI(object):
         if self.options['source_use_local_dump']:
             source = LocalDumpSource(self.options['source_dump_dir'])
 
-        elif self.options['source_use_local_db']:
+        elif self.options['source_use_direct']:
             self.check_containerization()
 
-            source = LocalDbSource(
+            source = DirectSource(
                 **self._build_kwargs(
                     [
                         'source_db',
-                        'source_collections_to_exclude',
+                        'source_exclude',
+                        'source_collection',
                         'source_tmp',
                         'source_is_dockerized',
                         'source_docker'
@@ -256,7 +270,8 @@ class CLI(object):
                 **self._build_kwargs(
                     [
                         'source_db',
-                        'source_collections_to_exclude',
+                        'source_exclude',
+                        'source_collection',
                         'source_ssh',
                         'source_tmp',
                         'source_is_dockerized',

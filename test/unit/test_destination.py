@@ -19,7 +19,14 @@
 
 import unittest
 
+from unit.mock import (
+    SCPClientMock,
+    SSHClientMock
+)
+
 from populator.destination.direct import DirectDestination
+from populator.destination.ssh import SSHDestination
+
 
 class TestDestination(unittest.TestCase):
     def test_direct_destination(self):
@@ -38,3 +45,16 @@ class TestDestination(unittest.TestCase):
             dd.get_restore_str(),
             'mongorestore -u test_user -p test_password --db test_db --ssl -h localhost:27017 --authenticationDatabase admin --noIndexRestore --drop %s'
         )
+
+    def test_ssh_destination(self):
+        sshd = SSHDestination(
+            db_name='test_db',
+            db_user='test_user',
+            ssh_host='127.0.0.1',
+            ssh_user='ssh_user',
+            ssh_client=SSHClientMock(),
+            scp_client=SCPClientMock()
+        )
+
+        sshd._populate()
+

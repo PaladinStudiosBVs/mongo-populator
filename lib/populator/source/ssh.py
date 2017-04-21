@@ -31,7 +31,7 @@ from populator.utils.docker import get_dump_from_container
 class SSHSource(SSHPopulator, MongoSource):
     def __init__(self, db_name=None, db_user=None, db_password=None, ssh_host=None, ssh_user=None,
                  ssh_password=None, ssh_key_file=None, tmp_dir=None, is_dockerized=False,
-                 docker_container_name=None, **kwargs):
+                 docker_container_name=None, ssh_client=None, scp_client=None):
         """
         :type db_name: str
         :param db_name:
@@ -55,14 +55,18 @@ class SSHSource(SSHPopulator, MongoSource):
             is_dockerized=is_dockerized,
             docker_container_name=docker_container_name
         )
-        SSHPopulator.__init__(
-            self,
-            ssh_host=ssh_host,
-            ssh_user=ssh_user,
-            ssh_password=ssh_password,
-            ssh_key_file=ssh_key_file
-        )
-        
+        if not ssh_client or not scp_client:
+            SSHPopulator.__init__(
+                self,
+                ssh_host=ssh_host,
+                ssh_user=ssh_user,
+                ssh_password=ssh_password,
+                ssh_key_file=ssh_key_file
+            )
+        else:
+            self.ssh_client = ssh_client
+            self.scp_client = scp_client
+
     def get_dump_dir(self):
         """
         :rtype: str
@@ -70,7 +74,7 @@ class SSHSource(SSHPopulator, MongoSource):
         """
         prefix = datetime.now().strftime('%Y%m%d-%H%M%S')
         # We first create a dump in the remote DB
-    
+
         # mongodump creates a directory named after the database, se we
         # exclude the db_name from the remote dump directory. It will be
         # created implicitly.
@@ -78,14 +82,14 @@ class SSHSource(SSHPopulator, MongoSource):
         _, stdout, _ = self.ssh_client.exec_command('mkdir -p {}'.format(remote_dump_dir))
         exit_status = stdout.channel.recv_exit_status()
         info(
-            'Temporary directory created in remote source (): {}'.format(remote_dump_dir),
+            'Temporary directory created in remote source: {}'.format(remote_dump_dir),
             color='green'
         )
         if exit_status == 0:
             pass
         else:
             die('Problems creating temporary directory in remote source')
-    
+
         dump_str = self.get_dump_str() % remote_dump_dir
         # The database is running inside a Docker container. We need to
         # do a little trick here, to avoid empty dumps
@@ -97,13 +101,13 @@ class SSHSource(SSHPopulator, MongoSource):
                 self.container_name,
                 ssh_client=self.ssh_client
             )
-    
+
         else:
             # If the database is not containerized, we just run the dump normally
             # on the remote server.
             stdin, stdout, stderr = self.ssh_client.exec_command(dump_str)
             exit_status = stdout.channel.recv_exit_status()
-        
+
             if exit_status == 0:
                 info(
                     'Created a dump in the remote source: {}'.format(dump_str),
@@ -111,15 +115,15 @@ class SSHSource(SSHPopulator, MongoSource):
                 )
             else:
                 die('Problems creating a dump in the remote source')
-    
+
         # Now we need to add the db_name to the remote_dump_dir
         remote_dump_dir = os.path.join(remote_dump_dir, self.db_name)
-    
+
         # Create the local dump dir
         tmpdir = os.path.join(self.tmp_dir, prefix)
         info('Creating local dump dir: {}'.format(tmpdir), color='purple')
         os.makedirs(tmpdir)
         self.scp_client.get(remote_dump_dir, tmpdir, recursive=True)
         tmpdir = os.path.join(tmpdir, self.db_name)
-    
+
         return tmpdir, prefix

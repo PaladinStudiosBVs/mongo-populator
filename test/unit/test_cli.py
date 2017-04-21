@@ -33,14 +33,14 @@ class TestCLI(CLITestCase):
             '--source-db-name', 'test_db_1',
             '--source-db-user', 'test_user_1',
             '--source-db-password', 'test_password_1',
-            '--source-use-local-db',
+            '--source-use-direct',
         ])
         c.parse()
 
         self.assertEqual(c.options['source_db_name'], 'test_db_1')
         self.assertEqual(c.options['source_db_user'], 'test_user_1')
         self.assertEqual(c.options['source_db_password'], 'test_password_1')
-        self.assertEqual(c.options['source_use_local_db'], True)
+        self.assertEqual(c.options['source_use_direct'], True)
 
     def test_exclude_collections_empty(self):
         c = CLI([
@@ -48,7 +48,7 @@ class TestCLI(CLITestCase):
         ])
         c.parse()
 
-        self.assertIsNone(c.options['source_collections_to_exclude'])
+        self.assertIsNone(c.options['source_exclude'])
 
     def test_exclude_collections_one_element(self):
         c = CLI([
@@ -57,7 +57,7 @@ class TestCLI(CLITestCase):
         ])
         c.parse()
 
-        self.assertListEqual(['abc'], c.options['source_collections_to_exclude'])
+        self.assertListEqual(['abc'], c.options['source_exclude'])
 
     def test_exclude_collections_several_elements(self):
         c = CLI([
@@ -68,7 +68,7 @@ class TestCLI(CLITestCase):
         ])
         c.parse()
 
-        self.assertListEqual(['abc', 'def', 'ghi'], c.options['source_collections_to_exclude'])
+        self.assertListEqual(['abc', 'def', 'ghi'], c.options['source_exclude'])
 
     def test_cli_cwd_config_file(self):
         c = CLI([])
@@ -77,18 +77,5 @@ class TestCLI(CLITestCase):
         self.assertEqual(c.options['source_db_name'], 'test_db')
         self.assertEqual(c.options['source_db_user'], 'test_user')
         self.assertEqual(c.options['source_db_password'], 'test_password')
-        self.assertEqual(c.options['source_use_local_db'], True)
+        self.assertEqual(c.options['source_use_direct'], True)
 
-    def test_local_source_ssh_destination(self):
-        with patch('paramiko.client.SSHClient.connect') as mock_ssh, \
-                patch('populator.source.local.LocalDbSource.get_dump_dir') as mock_dump_dir, \
-                patch('populator.destination.ssh.SSHDestination._populate') as mock_populate:
-            mock_dump_dir.return_value = 'dir_a', 'dir_b'
-            c = CLI([])
-            c.parse()
-
-            c.run()
-
-            mock_ssh.assert_called()
-            mock_dump_dir.assert_called()
-            mock_populate.assert_called()
