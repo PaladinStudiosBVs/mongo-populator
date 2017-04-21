@@ -18,6 +18,7 @@
 # along with Mongo Populator.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import shutil
 import unittest
 
 from unit.mock import (
@@ -102,7 +103,7 @@ class TestSource(unittest.TestCase):
         self.assertEqual(tmp_dir, os.path.join(p, 'test_db'))
         self.assertTrue(os.path.exists(p))
         self.assertTrue(os.path.isdir(p))
-        os.rmdir(p)
+        shutil.rmtree(p)
 
     def test_s3_source(self):
         mock_bucket = S3BucketMock('test_bucket')
@@ -125,5 +126,5 @@ class TestSource(unittest.TestCase):
         self.assertTrue(os.path.isdir(tmpdir))
         self.assertEqual(3, mock_bucket.download_count)
 
-        os.rmdir(tmpdir)
+        shutil.rmtree('/tmp/mongo-populator')
 

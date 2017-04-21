@@ -47,17 +47,17 @@ class AmazonS3Destination(MongoDestination, AmazonS3Populator):
             aws_secret_access_key=s3_secret_access_key,
             region_name=s3_region_name
         )
-    
+
     def _populate(self):
         self.prefix = os.path.join(
             self.s3_prefix, datetime.now().strftime('%Y%m%d-%H%M%S'), self.db_name
         )
-        
+
         info('Copying files to Amazon S3 ({}): {}'.format(self.bucket, self.prefix), color='purple')
         for file in os.listdir(self.dump_dir):
             orig_file = os.path.join(self.dump_dir, file)
             dest_file = os.path.join(self.prefix, file)
-            
+
             info('-> {}'.format(dest_file), color='white')
             info('-> {}'.format(orig_file), color='dark gray')
             self.bucket.upload_file(
