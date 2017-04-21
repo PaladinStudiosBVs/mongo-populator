@@ -41,11 +41,11 @@ def get_dump_from_container(db_name, dump_str, host_dump_dir, container_name, ss
     """
     cmd = 'docker exec -i {} {}'.format(container_name, dump_str)
     info('Creating dump inside container: {}'.format(cmd), color='purple')
-    
+
     if ssh_client:
         _, stdout, stderr = ssh_client.exec_command(cmd)
         exit_status = stdout.channel.recv_exit_status()
-        
+
         if exit_status == 0:
             info('Dump successfully created inside container.', color='green')
         else:
@@ -57,9 +57,9 @@ def get_dump_from_container(db_name, dump_str, host_dump_dir, container_name, ss
             stderr=subprocess.STDOUT,
             shell=True
         )
-    
+
         info(mongo_dump, color='dark gray')
-    
+
     # Copy dump from container to remote host
     cmd = 'docker cp {}:{} {}'.format(
         container_name,
@@ -70,7 +70,7 @@ def get_dump_from_container(db_name, dump_str, host_dump_dir, container_name, ss
         'Copying dump from container to host: {}'.format(cmd),
         color='purple'
     )
-    
+
     if ssh_client:
         _, stdout, _ = ssh_client.exec_command(cmd)
         exit_status = stdout.channel.recv_exit_status()
@@ -85,5 +85,5 @@ def get_dump_from_container(db_name, dump_str, host_dump_dir, container_name, ss
             stderr=subprocess.STDOUT,
             shell=True
         )
-    
+
         info(mongo_dump, color='dark gray')
